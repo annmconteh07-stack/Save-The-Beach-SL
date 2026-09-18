@@ -1,15 +1,94 @@
 import Link from "next/link";
 
-const pendingPosts = [
-  { title: "Plastic-free lunches at Kroo Bay", author: "Aminata Koroma", date: "Today, 09:42" },
-  { title: "The beach taught me patience", author: "Ibrahim Sesay", date: "Yesterday" },
-];
+import AdminLayoutShell from "@/components/admin-shell";
+import { prisma } from "@/lib/db";
 
-export default function AdminPage() {
+export const dynamic = "force-dynamic";
+
+export default async function AdminPage() {
+  const [recentVolunteers, recentPosts] = await Promise.all([
+    prisma.volunteer.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 6,
+    }),
+    prisma.post.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 4,
+      include: { author: true },
+    }),
+  ]);
+
   return (
-    <main className="admin-page">
-      <aside className="admin-sidebar"><Link className="brand blue-brand" href="/"><span className="brand-mark">STB</span><span>Save The Beach<br /><i>SL</i></span></Link><div className="admin-user"><span>MK</span><div><strong>Mariama Kamara</strong><small>Administrator</small></div></div><nav><a className="active" href="/admin">Overview</a><a href="#events">Events</a><a href="#registrations">Registrations</a><a href="#moderation">Content moderation</a></nav><Link className="back-home" href="/">← Back to website</Link></aside>
-      <section className="admin-main"><header className="admin-header"><div><p className="admin-kicker">Monday, 14 September 2026</p><h1>Good morning, Mariama.</h1><p>Here&apos;s what&apos;s happening across your coastline.</p></div><button className="admin-avatar" type="button">MK</button></header><div className="admin-stats"><div><span>Volunteers this month</span><strong>184</strong><small className="up">↑ 14% from August</small></div><div><span>Upcoming events</span><strong>03</strong><small>Next: Lumley Beach</small></div><div><span>Posts awaiting review</span><strong>02</strong><small className="attention">Needs your attention</small></div><div><span>Bags collected this year</span><strong>3,840</strong><small className="up">↑ 22% from 2025</small></div></div><div className="admin-columns"><section className="admin-panel" id="events"><div className="panel-heading"><div><p className="admin-kicker">Keep the dates moving</p><h2>Upcoming events</h2></div><button type="button" className="small-button">+ New event</button></div><div className="admin-event-row"><div className="admin-mini-date"><strong>06</strong><span>OCT</span></div><div><strong>Lumley Beach sunrise clean-up</strong><small>Lumley Beach, Freetown · 42 spots left</small></div><button type="button" className="more-button">•••</button></div><div className="admin-event-row"><div className="admin-mini-date"><strong>20</strong><span>OCT</span></div><div><strong>Tokeh shores community day</strong><small>Tokeh Beach, Western Area · 18 spots left</small></div><button type="button" className="more-button">•••</button></div><a className="panel-link" href="#all-events">Manage all events →</a></section><section className="admin-panel" id="moderation"><div className="panel-heading"><div><p className="admin-kicker">Give voices a platform</p><h2>Needs review <span className="count-pill">2</span></h2></div><a className="panel-link" href="#all-posts">View all →</a></div>{pendingPosts.map((post) => <div className="post-review" key={post.title}><div className="post-icon">✦</div><div><strong>{post.title}</strong><small>{post.author} · {post.date}</small></div><button type="button" className="approve-button">Review</button></div>)}</section></div><section className="registrations-panel" id="registrations"><div className="panel-heading"><div><p className="admin-kicker">People power</p><h2>Recent registrations</h2></div><button type="button" className="export-button">↓ Export CSV</button></div><table><thead><tr><th>Volunteer</th><th>Event</th><th>Registered</th><th>Status</th></tr></thead><tbody><tr><td><strong>Fatmata Jalloh</strong><small>fatmata.j@email.com</small></td><td>Lumley Beach clean-up</td><td>Today, 10:24</td><td><span className="status confirmed">Confirmed</span></td></tr><tr><td><strong>Mohamed Bangura</strong><small>mohamed.b@email.com</small></td><td>Tokeh shores day</td><td>Today, 08:16</td><td><span className="status confirmed">Confirmed</span></td></tr><tr><td><strong>Sia Nyuma</strong><small>sia.n@email.com</small></td><td>Lumley Beach clean-up</td><td>Yesterday</td><td><span className="status pending">Pending</span></td></tr></tbody></table></section></section>
-    </main>
+    <AdminLayoutShell
+      title="Control room"
+      description="Everything across your coastline, in one place."
+    >
+      <div className="admin-columns">
+        <section className="admin-panel">
+          <div className="panel-heading">
+            <div>
+              <p className="admin-kicker">Keep the dates moving</p>
+              <h2>Recent volunteers</h2>
+            </div>
+            <Link className="panel-link" href="/admin/volunteers">
+              View all →
+            </Link>
+          </div>
+          {recentVolunteers.length === 0 ? (
+            <p className="empty-state">No volunteers registered yet.</p>
+          ) : (
+            <div className="admin-event-row volunteer-row">
+              {recentVolunteers.map((volunteer) => (
+                <div className="volunteer-item" key={volunteer.id}>
+                  <span>
+                    {volunteer.name.split(" ").map((part) => part[0]).slice(0, 2).join("")}
+                  </span>
+                  <div>
+                    <strong>{volunteer.name}</strong>
+                    <small>
+                      {volunteer.age} yrs · {volunteer.phone} · {volunteer.email}
+                    </small>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <section className="admin-panel">
+          <div className="panel-heading">
+            <div>
+              <p className="admin-kicker">Give voices a platform</p>
+              <h2>Latest posts</h2>
+            </div>
+            <Link className="panel-link" href="/admin/posts">
+              Moderate →
+            </Link>
+          </div>
+          {recentPosts.length === 0 ? (
+            <p className="empty-state">No posts yet.</p>
+          ) : (
+            <div className="admin-post-list">
+              {recentPosts.map((post) => (
+                <div className="admin-post-item" key={post.id}>
+                  <div>
+                    <strong>{post.title}</strong>
+                    <small>
+                      {post.author.name} · {post.status.toLowerCase()}
+                    </small>
+                  </div>
+                  <div className="admin-action-row">
+                    <Link className="read-button" href={`/blog/${post.id}`}>
+                      Read
+                    </Link>
+                    <span className={`status-pill status-${post.status.toLowerCase()}`}>{post.status}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
+    </AdminLayoutShell>
   );
 }

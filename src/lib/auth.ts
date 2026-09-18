@@ -2,16 +2,25 @@ import { cookies } from "next/headers";
 import { SignJWT, jwtVerify } from "jose";
 
 export const AUTH_COOKIE = "stb_session";
+export const SESSION_DAYS = 365;
 
 export type SessionUser = {
   id: string;
   email: string;
   name: string;
   role: string;
+  emailVerified: boolean;
+  avatarUrl: string | null;
 };
 
 function getAuthSecret() {
-  const secret = process.env.AUTH_SECRET ?? "save-the-beach-local-secret";
+  const secret = process.env.AUTH_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("AUTH_SECRET is not set. Set it before deploying.");
+    }
+    return new TextEncoder().encode("save-the-beach-local-secret");
+  }
   return new TextEncoder().encode(secret);
 }
 
@@ -21,10 +30,12 @@ export async function createAuthSession(user: SessionUser) {
     email: user.email,
     name: user.name,
     role: user.role,
+    emailVerified: user.emailVerified,
+    avatarUrl: user.avatarUrl ?? null,
   })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime("7d")
+    .setExpirationTime(`${SESSION_DAYS}d`)
     .sign(getAuthSecret());
 
   const cookieStore = await cookies();
@@ -33,7 +44,7 @@ export async function createAuthSession(user: SessionUser) {
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     path: "/",
-    maxAge: 60 * 60 * 24 * 7,
+    maxAge: 60 * 60 * 24 * SESSION_DAYS,
   });
 }
 
@@ -57,6 +68,8 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
       email: String(payload.email),
       name: String(payload.name),
       role: String(payload.role),
+      emailVerified: payload.emailVerified === true,
+      avatarUrl: typeof payload.avatarUrl === "string" ? payload.avatarUrl : null,
     };
   } catch {
     return null;

@@ -1,15 +1,20 @@
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider = "postgresql"
 }
 
 enum Role {
   CONTRIBUTOR
   ADMIN
+}
+
+enum ProfileVisibility {
+  PUBLIC
+  PRIVATE
 }
 
 enum PostStatus {
@@ -18,14 +23,25 @@ enum PostStatus {
   REJECTED
 }
 
+enum MediaType {
+  PHOTO
+  VIDEO
+}
+
 model User {
-  id           String   @id @default(cuid())
-  name         String
-  email        String   @unique
-  passwordHash String
-  role         Role     @default(CONTRIBUTOR)
-  createdAt    DateTime @default(now())
-  posts        Post[]
+  id                 String              @id @default(cuid())
+  name               String
+  email              String              @unique
+  passwordHash       String
+  role               Role                @default(CONTRIBUTOR)
+  emailVerified      Boolean             @default(false)
+  avatarUrl          String?
+  profileVisibility  ProfileVisibility   @default(PUBLIC)
+  verifyToken        String?
+  verifyTokenExpires DateTime?
+  createdAt          DateTime            @default(now())
+  posts              Post[]
+  comments           Comment[]
 }
 
 model Event {
@@ -44,11 +60,21 @@ model Registration {
   name             String
   email            String
   phone            String
+  age              Int
   emergencyContact String?
   notes            String?
   eventId          String
   event            Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
   createdAt        DateTime @default(now())
+}
+
+model Volunteer {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String
+  age       Int
+  createdAt DateTime @default(now())
 }
 
 model Post {
@@ -60,4 +86,23 @@ model Post {
   author    User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
   status    PostStatus @default(PENDING)
   createdAt DateTime   @default(now())
+  comments  Comment[]
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  body      String
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Media {
+  id        String    @id @default(cuid())
+  caption   String
+  url       String
+  type      MediaType @default(PHOTO)
+  createdAt DateTime  @default(now())
 }

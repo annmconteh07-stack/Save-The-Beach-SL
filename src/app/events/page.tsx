@@ -1,72 +1,94 @@
 import Link from "next/link";
 
-import { events } from "@/app/lib/site-data";
+import SiteFooter from "@/components/site-footer";
+import SiteHeader from "@/components/site-header";
+import { prisma } from "@/lib/db";
 
-export default function EventsPage() {
+export const dynamic = "force-dynamic";
+
+const gradients = [
+  "linear-gradient(150deg, #0a7bb3, #075a88)",
+  "linear-gradient(150deg, #17b696, #0e8c73)",
+  "linear-gradient(150deg, #ffd166, #ffa84d)",
+  "linear-gradient(150deg, #ff8fa3, #e86d88)",
+  "linear-gradient(150deg, #7f86ff, #5f66de)",
+  "linear-gradient(150deg, #2ec8c0, #17a8a0)",
+];
+
+const accents = ["var(--blue)", "var(--teal)", "var(--sun)", "var(--pink)", "var(--grape)", "var(--aqua)"];
+
+export default async function EventsPage() {
+  const events = await prisma.event.findMany({
+    orderBy: { date: "asc" },
+    include: {
+      registrations: true,
+    },
+  });
+
   return (
     <main className="page-shell">
-      <header className="page-header">
-        <nav className="site-nav" aria-label="Main navigation">
-          <Link className="brand blue-brand" href="/" aria-label="Save The Beach SL home">
-            <span className="brand-mark">STB</span>
-            <span>
-              Save The Beach
-              <br />
-              <i>SL</i>
-            </span>
-          </Link>
-          <div className="nav-links">
-            <Link href="/about">About</Link>
-            <Link href="/events">Clean-ups</Link>
-            <Link href="/blog">Journal</Link>
-          </div>
-          <div className="nav-actions">
-            <Link className="admin-link" href="/admin">
-              Admin portal <span>↗</span>
-            </Link>
-            <Link className="nav-button" href="/blog/new">
-              Submit a story
-            </Link>
-          </div>
-        </nav>
-      </header>
+      <SiteHeader />
 
-      <section className="page-hero">
-        <div className="content-width page-hero-inner">
-          <p className="eyebrow blue-eyebrow">Upcoming clean-ups</p>
-          <h1>
+      <section className="fun-hero blob-field">
+        <span className="blob blob-sun" />
+        <span className="blob blob-aqua" />
+        <div className="content-width">
+          <span className="pill pill-aqua">Upcoming clean-ups</span>
+          <h1 style={{ maxWidth: 880 }}>
             Join the next <em>coastline reset.</em>
           </h1>
-          <p>Bring gloves, bring energy, and help keep our shoreline clean and alive.</p>
+          <p className="lead">
+            Bring gloves, bring energy, and help keep our shoreline clean and alive.
+          </p>
+          <div className="hero-tags">
+            <span className="pill pill-sun">{events.length} events scheduled</span>
+            <span className="pill pill-teal">All welcome</span>
+          </div>
         </div>
       </section>
 
-      <section className="content-section">
+      <section className="band band-ice">
         <div className="content-width list-stack">
-          {events.map((event) => (
-            <article key={event.id} className="event-listing-card">
-              <div className="event-date-block">
-                <strong>{event.day}</strong>
-                <span>{event.month}</span>
-              </div>
-              <div className="event-summary">
-                <p className="event-label">Community clean-up</p>
-                <h2>{event.title}</h2>
-                <p>
-                  {event.location} · {event.time}
-                </p>
-                <small>{event.description}</small>
-              </div>
-              <div className="event-actions">
-                <span>{event.spotsLeft} spots left</span>
-                <Link href={`/events/${event.id}`}>
-                  View details <b>↗</b>
-                </Link>
-              </div>
-            </article>
-          ))}
+          {events.map((event, index) => {
+            const spotsLeft = Math.max(event.capacityLimit - event.registrations.length, 0);
+            const day = new Intl.DateTimeFormat("en-GB", { day: "2-digit" }).format(event.date);
+            const month = new Intl.DateTimeFormat("en-GB", { month: "short" }).format(event.date).toUpperCase();
+
+            return (
+              <article
+                key={event.id}
+                className="event-fun"
+                style={{ ["--accent" as string]: accents[index % accents.length] }}
+              >
+                <div className="event-fun-date" style={{ background: gradients[index % gradients.length] }}>
+                  <strong>{day}</strong>
+                  <span>{month}</span>
+                </div>
+                <div className="event-summary">
+                  <span className="pill pill-outline">Community clean-up</span>
+                  <h2>{event.title}</h2>
+                  <p>
+                    {event.location} ·{" "}
+                    {new Intl.DateTimeFormat("en-GB", { hour: "numeric", minute: "2-digit" }).format(event.date)}
+                  </p>
+                  <small>{event.description}</small>
+                </div>
+                <div className="event-actions">
+                  <span>{spotsLeft} spots left</span>
+                  <Link href={`/events/${event.id}`}>
+                    View details <b>↗</b>
+                  </Link>
+                </div>
+              </article>
+            );
+          })}
+          {events.length === 0 ? (
+            <p className="empty-state">No upcoming clean-ups right now. Check back soon.</p>
+          ) : null}
         </div>
       </section>
+
+      <SiteFooter />
     </main>
   );
 }
