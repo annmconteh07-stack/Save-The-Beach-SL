@@ -8,17 +8,13 @@ import { prisma } from "@/lib/db";
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const [events, mediaItems, volunteerCount, registrationCount] = await Promise.all([
-    prisma.event.count(),
+  const [events, mediaItems] = await Promise.all([
+    prisma.event.count({ where: { date: { gte: new Date() } } }),
     prisma.media.findMany({
       orderBy: { createdAt: "desc" },
       take: 3,
     }),
-    prisma.volunteer.count(),
-    prisma.registration.count(),
   ]);
-
-  const totalVolunteers = volunteerCount + registrationCount;
 
   return (
     <main className="blue-site">
@@ -38,7 +34,7 @@ export default async function Home() {
           <div className="hero-tags" style={{ marginTop: 28 }}>
             <span className="pill pill-sun">Volunteer-powered</span>
             <span className="pill pill-aqua">Community first</span>
-            <span className="pill pill-pink">Since 2021</span>
+            <span className="pill pill-pink">Since 2025</span>
           </div>
           <div className="hero-actions">
             <Link className="white-button" href="/volunteer">
@@ -112,11 +108,6 @@ export default async function Home() {
               <i>🧹</i>
               <strong>{Math.max(events, 1)}</strong>
               <span>clean-ups planned</span>
-            </div>
-            <div className="stat-tile stat-teal span-1">
-              <i>💪</i>
-              <strong>{Math.max(totalVolunteers, 3).toLocaleString()}</strong>
-              <span>volunteers registered</span>
             </div>
             <div className="stat-tile stat-sun span-1">
               <i>🗑️</i>

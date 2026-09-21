@@ -88,7 +88,7 @@ export default async function VerifyPage({ searchParams }: PageProps<"/verify">)
           </>
         )}
 
-        {message ? (
+        {message && status !== "sent" ? (
           <div className={`notice notice-${message.tone}`} role="status">
             {message.body}
           </div>
@@ -122,9 +122,11 @@ export default async function VerifyPage({ searchParams }: PageProps<"/verify">)
           </div>
         )}
 
-        <Link className="back-link" href={next}>
-          Continue to the site
-        </Link>
+        {!(user && !user.emailVerified) ? (
+          <Link className="back-link" href={next}>
+            Continue to the site
+          </Link>
+        ) : null}
       </div>
     </section>
   );

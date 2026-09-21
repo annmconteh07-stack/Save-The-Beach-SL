@@ -517,6 +517,21 @@
 .profile-form fieldset input[type="radio"] { accent-color: var(--blue); width: auto; }
 .profile-hint { color: #6e8799; font-size: 12px; font-weight: 400; letter-spacing: 0; line-height: 1.6; text-transform: none; }
 .profile-avatar-img { border-radius: 50%; display: block; height: 128px; margin: 0 auto 20px; object-fit: cover; width: 128px; }
+.profile-avatar-btn { background: none; border: 0; border-radius: 50%; cursor: pointer; display: inline-block; line-height: 0; margin: 0 auto 20px; padding: 0; position: relative; }
+.profile-avatar-btn .profile-avatar-lg,
+.profile-avatar-btn .profile-avatar-img { margin-bottom: 0; }
+.profile-avatar-btn:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+.profile-avatar-btn:hover .profile-avatar-lg,
+.profile-avatar-btn:hover .profile-avatar-img { opacity: 0.9; }
+.profile-avatar-edit { align-items: center; background: var(--blue); border: 3px solid #fff; border-radius: 50%; bottom: 6px; color: #fff; display: flex; font-size: 15px; height: 38px; justify-content: center; position: absolute; right: 6px; width: 38px; }
+.profile-edit-inline { box-sizing: border-box; border-top: 1px solid var(--line); margin-top: 10px; max-width: 100%; overflow-wrap: anywhere; padding-top: 24px; text-align: left; width: 100%; }
+.profile-edit-inline .auth-form,
+.profile-edit-inline .profile-form fieldset { grid-template-columns: minmax(0, 1fr); min-width: 0; }
+.profile-edit-inline input[type="text"],
+.profile-edit-inline input[type="file"] { box-sizing: border-box; min-width: 0; width: 100%; }
+.profile-edit-inline .profile-form fieldset label { line-height: 1.5; min-width: 0; }
+.profile-edit-inline .profile-form fieldset label input[type="radio"] { flex: 0 0 auto; min-width: 0; }
+.profile-edit-inline .btn { padding: 13px 16px; }
 .profile-remove-avatar { margin-top: -6px; }
 .auth-form .profile-remove-avatar { align-items: center; color: #3a5670; display: flex; font-size: 13px; font-weight: 400; gap: 10px; letter-spacing: 0; text-transform: none; }
 .auth-form .profile-remove-avatar input[type="checkbox"] { accent-color: var(--blue); border: 0; border-radius: 4px; padding: 0; width: auto; }

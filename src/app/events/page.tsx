@@ -19,6 +19,7 @@ const accents = ["var(--blue)", "var(--teal)", "var(--sun)", "var(--pink)", "var
 
 export default async function EventsPage() {
   const events = await prisma.event.findMany({
+    where: { date: { gte: new Date() } },
     orderBy: { date: "asc" },
     include: {
       registrations: true,
@@ -50,7 +51,8 @@ export default async function EventsPage() {
       <section className="band band-ice">
         <div className="content-width list-stack">
           {events.map((event, index) => {
-            const spotsLeft = Math.max(event.capacityLimit - event.registrations.length, 0);
+            const spotsLeft =
+              event.capacityLimit > 0 ? Math.max(event.capacityLimit - event.registrations.length, 0) : null;
             const day = new Intl.DateTimeFormat("en-GB", { day: "2-digit" }).format(event.date);
             const month = new Intl.DateTimeFormat("en-GB", { month: "short" }).format(event.date).toUpperCase();
 
@@ -74,7 +76,7 @@ export default async function EventsPage() {
                   <small>{event.description}</small>
                 </div>
                 <div className="event-actions">
-                  <span>{spotsLeft} spots left</span>
+                  <span>{spotsLeft === null ? "Open to all" : `${spotsLeft} spots left`}</span>
                   <Link href={`/events/${event.id}`}>
                     View details <b>↗</b>
                   </Link>

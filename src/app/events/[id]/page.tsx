@@ -33,7 +33,7 @@ export default async function EventDetailPage({
     notFound();
   }
 
-  const spotsLeft = Math.max(event.capacityLimit - event.registrations.length, 0);
+  const spotsLeft = event.capacityLimit > 0 ? Math.max(event.capacityLimit - event.registrations.length, 0) : null;
   const formattedDate = new Intl.DateTimeFormat("en-GB", {
     day: "2-digit",
     month: "short",
@@ -109,7 +109,7 @@ export default async function EventDetailPage({
                 </div>
                 <div className="event-meta-row">
                   <span>Spots left</span>
-                  <strong>{spotsLeft}</strong>
+                  <strong>{spotsLeft === null ? "No limit" : spotsLeft}</strong>
                 </div>
                 <EventRegistrationForm eventId={event.id} />
               </>

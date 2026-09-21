@@ -90,7 +90,7 @@ export default function AboutPage() {
               <img src="https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?auto=format&fit=crop&w=800&q=80" alt="" />
             </div>
             <span className="collage-chip c1">Tokeh Beach</span>
-            <span className="collage-chip c2">Est. 2021</span>
+            <span className="collage-chip c2">Est. 2025</span>
           </div>
         </div>
       </section>
@@ -100,7 +100,7 @@ export default function AboutPage() {
           <div className="alt-art">
             <img src="https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=900&q=80" alt="Volunteers on the shoreline" />
             <div className="alt-badge">
-              <strong>2021</strong>
+              <strong>2025</strong>
               <span>Our first clean-up</span>
             </div>
           </div>

@@ -24,8 +24,7 @@ export default async function SignupPage({
           </h2>
           <p>
             Create an account to publish stories from the shoreline, comment on other people&apos;s
-            posts, and stay close to the movement. We will email you a 6-digit
-            confirmation code.
+            posts, and stay close to the movement.
           </p>
           <div className="auth-pills">
             <span className="pill pill-aqua">Write</span>
@@ -37,10 +36,6 @@ export default async function SignupPage({
           <div className="auth-inner">
             <span className="pill pill-blue">Sign up</span>
             <h1>Create your account.</h1>
-            <p className="auth-aside">
-              After signing up we will email you a 6-digit confirmation code. You stay signed in on this
-              device, so you will not have to log in again.
-            </p>
             {isAlreadyRegistered ? (
               <div className="notice notice-danger" role="alert">
                 That email address is already registered. Try logging in instead.

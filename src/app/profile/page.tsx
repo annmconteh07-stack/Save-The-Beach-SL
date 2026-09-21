@@ -3,7 +3,8 @@ import { redirect } from "next/navigation";
 
 import SiteFooter from "@/components/site-footer";
 import SiteHeader from "@/components/site-header";
-import { logoutAction, updateProfileAction } from "@/lib/actions";
+import ProfileEditor from "@/components/profile-editor";
+import { logoutAction } from "@/lib/actions";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
@@ -61,7 +62,6 @@ export default async function ProfilePage({
 
   const tone = avatarTones[user.id.charCodeAt(0) % avatarTones.length];
   const initials = initialsOf(user.name);
-  const profileUrl = `/profile/${user.id}`;
 
   return (
     <main className="page-shell">
@@ -100,11 +100,13 @@ export default async function ProfilePage({
 
           <div className="profile-layout">
             <aside className="profile-card">
-              {user.avatarUrl ? (
-                <img src={user.avatarUrl} alt={`${user.name}'s profile picture`} className="profile-avatar-img" />
-              ) : (
-                <div className={`profile-avatar-lg ${tone}`}>{initials}</div>
-              )}
+              <ProfileEditor
+                name={user.name}
+                avatarUrl={user.avatarUrl}
+                profileVisibility={user.profileVisibility}
+                avatarTone={tone}
+                initials={initials}
+              />
               <h2>{user.name}</h2>
               <p className="profile-role">
                 <span className={`pill ${user.role === "ADMIN" ? "pill-pink" : "pill-teal"}`}>
@@ -117,9 +119,6 @@ export default async function ProfilePage({
               <p className="profile-privacy">
                 Profile is {user.profileVisibility === "PUBLIC" ? "visible to everyone" : "private (only you)"}
               </p>
-              <Link className="line-link small" href={profileUrl} target="_blank">
-                View my public profile <span>↗</span>
-              </Link>
             </aside>
 
             <div className="profile-main">
@@ -176,65 +175,6 @@ export default async function ProfilePage({
                     </div>
                   ))
                 )}
-              </div>
-
-              <div className="profile-edit">
-                <div className="panel-heading-row">
-                  <div>
-                    <p className="section-kicker blue-kicker">
-                      <span>Edit profile</span>
-                    </p>
-                    <h3>Make it yours</h3>
-                  </div>
-                </div>
-
-                <form className="auth-form profile-form" action={updateProfileAction}>
-                  <label>
-                    Display name
-                    <input type="text" name="name" defaultValue={user.name} minLength={2} maxLength={80} required />
-                  </label>
-                  <label>
-                    Profile picture
-                    <input
-                      type="file"
-                      name="avatar"
-                      accept="image/png,image/jpeg,image/webp,image/gif,image/avif"
-                    />
-                    <span className="profile-hint">
-                      Upload a photo to replace your initials avatar (up to 5 MB). Leave empty to keep the current one.
-                    </span>
-                  </label>
-                  {user.avatarUrl ? (
-                    <label className="profile-remove-avatar">
-                      <input type="checkbox" name="removeAvatar" value="1" />
-                      Remove my current photo
-                    </label>
-                  ) : null}
-                  <fieldset className="profile-visibility">
-                    <legend>Who can see your profile?</legend>
-                    <label>
-                      <input
-                        type="radio"
-                        name="profileVisibility"
-                        value="PUBLIC"
-                        defaultChecked={user.profileVisibility === "PUBLIC"}
-                      />
-                      Public — anyone can visit your profile and see your stories
-                    </label>
-                    <label>
-                      <input
-                        type="radio"
-                        name="profileVisibility"
-                        value="PRIVATE"
-                        defaultChecked={user.profileVisibility === "PRIVATE"}
-                      />
-                      Private — only you can see your profile page
-                    </label>
-                  </fieldset>
-                  <button type="submit" className="btn btn-primary btn-block">
-                    Save changes →
-                  </button>
-                </form>
               </div>
             </div>
           </div>

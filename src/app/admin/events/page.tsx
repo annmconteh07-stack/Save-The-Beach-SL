@@ -56,7 +56,8 @@ export default async function AdminEventsPage({
           ) : (
             <div className="admin-event-list">
               {events.map((event) => {
-                const spotsLeft = Math.max(event.capacityLimit - event.registrations.length, 0);
+                const spotsLeft =
+                  event.capacityLimit > 0 ? Math.max(event.capacityLimit - event.registrations.length, 0) : null;
                 return (
                   <div className="admin-event-row" key={event.id}>
                     <div className="admin-mini-date">
@@ -66,7 +67,8 @@ export default async function AdminEventsPage({
                     <div>
                       <strong>{event.title}</strong>
                       <small>
-                        {event.location} · {event.registrations.length} registrations · {spotsLeft} spots left
+                        {event.location} · {event.registrations.length} registrations ·{" "}
+                        {spotsLeft === null ? "no capacity limit" : `${spotsLeft} spots left`}
                       </small>
                     </div>
                     <form action={deleteEventAction}>
