@@ -37,10 +37,6 @@ export default async function LoginPage({
           <div className="auth-inner">
             <span className="pill pill-blue">Log in</span>
             <h1>Welcome back.</h1>
-            <p className="auth-aside">
-              You stay signed in on this device for a long time, so you will rarely need to log in
-              again.
-            </p>
             {isInvalid ? (
               <div className="notice notice-danger" role="alert">
                 Invalid email or password. Please try again.
@@ -57,14 +53,14 @@ export default async function LoginPage({
                 <input type="password" name="password" placeholder="••••••••" required />
               </label>
               <button type="submit" className="btn btn-primary btn-block">
-                Log in →
+                Log in
               </button>
             </form>
             <p className="auth-switch">
               Need an account? <Link href="/signup">Create one</Link>
             </p>
             <Link className="back-link" href="/">
-              ← Back home
+              Back home
             </Link>
           </div>
         </div>

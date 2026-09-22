@@ -2,6 +2,8 @@ import { randomBytes } from "node:crypto";
 import { mkdir, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+import { createClient } from "@supabase/supabase-js";
+
 const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
 
 export const MAX_IMAGE_BYTES = 15 * 1024 * 1024;
@@ -24,6 +26,15 @@ const MIME_TO_EXT: Record<string, string> = {
 const IMAGE_EXT = /^\.(png|jpe?g|webp|gif|avif|heic)$/;
 const VIDEO_EXT = /^\.(mp4|webm|ogv|mov|m4v)$/;
 
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const storageBucket = process.env.SUPABASE_STORAGE_BUCKET ?? "uploads";
+
+const supabase =
+  supabaseUrl && supabaseServiceKey
+    ? createClient(supabaseUrl, supabaseServiceKey, { auth: { persistSession: false } })
+    : null;
+
 function extensionOf(filename: string) {
   return path.extname(filename).toLowerCase();
 }
@@ -38,6 +49,33 @@ export function detectMediaKind(file: File): "PHOTO" | "VIDEO" | null {
     return "VIDEO";
   }
   return null;
+}
+
+function allowedExtension(ext: string) {
+  return IMAGE_EXT.test(ext) || VIDEO_EXT.test(ext);
+}
+
+async function saveToSupabase(file: File, name: string): Promise<string> {
+  if (!supabase) {
+    throw new Error("Supabase storage is not configured.");
+  }
+  const bytes = Buffer.from(await file.arrayBuffer());
+  const { error } = await supabase.storage.from(storageBucket).upload(name, bytes, {
+    contentType: file.type || "application/octet-stream",
+    cacheControl: "3600",
+    upsert: false,
+  });
+  if (error) {
+    throw new Error(error.message);
+  }
+  const { data } = supabase.storage.from(storageBucket).getPublicUrl(name);
+  return data.publicUrl;
+}
+
+async function saveToDisk(file: File, name: string): Promise<string> {
+  await mkdir(UPLOAD_DIR, { recursive: true });
+  await writeFile(path.join(UPLOAD_DIR, name), Buffer.from(await file.arrayBuffer()));
+  return `/uploads/${name}`;
 }
 
 export async function saveUpload(file: File): Promise<{ url: string; kind: "PHOTO" | "VIDEO" }> {
@@ -55,20 +93,30 @@ export async function saveUpload(file: File): Promise<{ url: string; kind: "PHOT
   }
 
   const ext = MIME_TO_EXT[file.type] ?? extensionOf(file.name);
-  if (!IMAGE_EXT.test(ext) && !VIDEO_EXT.test(ext)) {
+  if (!allowedExtension(ext)) {
     throw new Error("Unsupported file type.");
   }
 
   const name = `${randomBytes(16).toString("hex")}${ext}`;
-  await mkdir(UPLOAD_DIR, { recursive: true });
-  await writeFile(path.join(UPLOAD_DIR, name), Buffer.from(await file.arrayBuffer()));
+  const url = supabase ? await saveToSupabase(file, name) : await saveToDisk(file, name);
 
-  return { url: `/uploads/${name}`, kind };
+  return { url, kind };
 }
 
 export async function deleteStoredFile(url: string | null | undefined) {
-  if (!url || !url.startsWith("/uploads/")) {
+  if (!url) {
     return;
   }
-  await unlink(path.join(process.cwd(), "public", url)).catch(() => undefined);
+
+  if (url.startsWith("/uploads/")) {
+    await unlink(path.join(process.cwd(), "public", url)).catch(() => undefined);
+    return;
+  }
+
+  if (supabase) {
+    const name = url.split("/").pop();
+    if (name) {
+      await supabase.storage.from(storageBucket).remove([name]).catch(() => undefined);
+    }
+  }
 }

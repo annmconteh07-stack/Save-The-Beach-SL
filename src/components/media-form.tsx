@@ -30,6 +30,14 @@ export default function MediaForm() {
           <option value="VIDEO">Video</option>
         </select>
       </label>
+      <label>
+        Category
+        <select name="category" defaultValue="">
+          <option value="">Uncategorised</option>
+          <option value="CLEANUP">Clean-up</option>
+          <option value="COMMUNITY_DAY">Community day</option>
+        </select>
+      </label>
       <button type="submit" className="blue-button auth-button">
         Add to gallery <span>↗</span>
       </button>

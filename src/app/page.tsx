@@ -8,13 +8,16 @@ import { prisma } from "@/lib/db";
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const [events, mediaItems] = await Promise.all([
+  const [events, mediaItems, siteStats] = await Promise.all([
     prisma.event.count({ where: { date: { gte: new Date() } } }),
     prisma.media.findMany({
       orderBy: { createdAt: "desc" },
       take: 3,
     }),
+    prisma.siteStat.findMany(),
   ]);
+
+  const statByKey = new Map(siteStats.map((stat) => [stat.key, stat.value]));
 
   return (
     <main className="blue-site">
@@ -38,7 +41,7 @@ export default async function Home() {
           </div>
           <div className="hero-actions">
             <Link className="white-button" href="/volunteer">
-              Become a volunteer <span>→</span>
+              Become a volunteer
             </Link>
             <Link className="hero-text-link" href="#mission">
               Discover our work <span>↓</span>
@@ -111,12 +114,12 @@ export default async function Home() {
             </div>
             <div className="stat-tile stat-sun span-1">
               <i>🗑️</i>
-              <strong>3.8k</strong>
+              <strong>{statByKey.get("bagsCollected") ?? ""}</strong>
               <span>bags collected</span>
             </div>
             <div className="stat-tile stat-pink span-1">
               <i>🏖️</i>
-              <strong>12</strong>
+              <strong>{statByKey.get("beachesCovered") ?? ""}</strong>
               <span>beaches covered</span>
             </div>
           </div>

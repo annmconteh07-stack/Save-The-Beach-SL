@@ -28,6 +28,11 @@ enum MediaType {
   VIDEO
 }
 
+enum MediaCategory {
+  CLEANUP
+  COMMUNITY_DAY
+}
+
 model User {
   id                 String              @id @default(cuid())
   name               String
@@ -100,9 +105,23 @@ model Comment {
 }
 
 model Media {
-  id        String    @id @default(cuid())
+  id        String         @id @default(cuid())
   caption   String
   url       String
-  type      MediaType @default(PHOTO)
-  createdAt DateTime  @default(now())
+  type      MediaType      @default(PHOTO)
+  category  MediaCategory?
+  createdAt DateTime       @default(now())
+}
+
+model SiteStat {
+  key   String @id
+  value String
+}
+
+model TeamMember {
+  id        String @id @default(cuid())
+  name      String
+  role      String
+  bio       String
+  sortOrder Int    @default(0)
 }

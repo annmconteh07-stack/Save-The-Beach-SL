@@ -77,11 +77,17 @@ export default async function AdminLayoutShell({
           <Link href="/admin/media" className={title === "Media" ? "active" : ""}>
             Media
           </Link>
+          <Link href="/admin/stats" className={title === "Impact stats" ? "active" : ""}>
+            Impact stats
+          </Link>
           <Link href="/admin/posts" className={title === "Blog" ? "active" : ""}>
             Blog
           </Link>
           <Link href="/admin/volunteers" className={title === "Volunteers" ? "active" : ""}>
             Volunteers
+          </Link>
+          <Link href="/admin/team" className={title === "Team" ? "active" : ""}>
+            Team
           </Link>
         </nav>
         <Link className="back-home" href="/">

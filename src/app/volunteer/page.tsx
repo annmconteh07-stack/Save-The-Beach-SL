@@ -87,8 +87,6 @@ export default async function VolunteerPage({
             </p>
             <ul className="detail-list" style={{ color: "#eafff9" }}>
               <li>No experience needed, every age is welcome</li>
-              <li>Transport coordination for remote beaches</li>
-              <li>Certificates for schools and institutions</li>
               <li>Regular updates on events and clean-ups</li>
             </ul>
           </div>

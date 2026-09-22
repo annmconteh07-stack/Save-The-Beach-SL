@@ -273,6 +273,10 @@
 .pill-grape { background: var(--grape); color: #fff; }
 .pill-lime { background: var(--lime); color: #2f4300; }
 .pill-outline { background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(10, 56, 82, 0.16); color: var(--navy); }
+.pill-filter { border: 1px solid transparent; box-shadow: none; cursor: pointer; transition: box-shadow 150ms ease, transform 150ms ease; }
+.pill-filter:hover { box-shadow: 0 4px 14px rgba(10, 56, 82, 0.18); transform: translateY(-1px); }
+.pill-filter:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+.pill-filter.pill-active { box-shadow: inset 0 0 0 2px var(--navy); }
 
 /* Bento ------------------------------------------------------------------ */
 .bento { display: grid; gap: 20px; grid-template-columns: repeat(4, minmax(0, 1fr)); }

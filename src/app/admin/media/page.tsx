@@ -76,7 +76,8 @@ export default async function AdminMediaPage({
                   <div>
                     <strong>{item.caption}</strong>
                     <small>
-                      {item.type.toLowerCase()} ·{" "}
+                      {item.type.toLowerCase()}
+                      {item.category ? ` · ${item.category === "COMMUNITY_DAY" ? "Community day" : "Clean-up"}` : ""} ·{" "}
                       {new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric" }).format(
                         item.createdAt,
                       )}

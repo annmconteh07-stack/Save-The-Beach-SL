@@ -2,27 +2,9 @@ import Link from "next/link";
 
 import SiteFooter from "@/components/site-footer";
 import SiteHeader from "@/components/site-header";
+import { prisma } from "@/lib/db";
 
-const teamMembers = [
-  {
-    name: "Mariama Kamara",
-    role: "Co-founder & programme lead",
-    bio: "A community organiser focused on local partnerships and beach education across Freetown.",
-    tone: "tone-blue",
-  },
-  {
-    name: "Ibrahim Sesay",
-    role: "Volunteer coordinator",
-    bio: "Coordinates cleanup logistics, youth activations, and weekly outreach across the coast.",
-    tone: "tone-teal",
-  },
-  {
-    name: "Aminata Conteh",
-    role: "Field communications",
-    bio: "Documents stories from the shoreline and helps turn local action into a shared movement.",
-    tone: "tone-pink",
-  },
-];
+export const dynamic = "force-dynamic";
 
 const values = [
   {
@@ -49,13 +31,17 @@ const values = [
 ];
 
 const stats = [
-  { value: "3.8k", label: "bags collected", tone: "stat-blue", icon: "🗑️" },
-  { value: "12", label: "beaches covered", tone: "stat-teal", icon: "🏖️" },
-  { value: "40+", label: "clean-ups run", tone: "stat-sun", icon: "🧹" },
-  { value: "900", label: "volunteers strong", tone: "stat-pink", icon: "💪" },
+  { key: "bagsCollected", label: "bags collected", tone: "stat-blue", icon: "🗑️" },
+  { key: "beachesCovered", label: "beaches covered", tone: "stat-teal", icon: "🏖️" },
+  { key: "cleanupsRun", label: "clean-ups run", tone: "stat-sun", icon: "🧹" },
+  { key: "volunteers", label: "volunteers strong", tone: "stat-pink", icon: "💪" },
 ];
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const siteStats = await prisma.siteStat.findMany();
+  const statByKey = new Map(siteStats.map((stat) => [stat.key, stat.value]));
+  const teamMembers = await prisma.teamMember.findMany({ orderBy: { sortOrder: "asc" } });
+
   return (
     <main className="page-shell">
       <SiteHeader />
@@ -150,9 +136,9 @@ export default function AboutPage() {
           </h2>
           <div className="bento">
             {stats.map((stat) => (
-              <div key={stat.label} className={`stat-tile ${stat.tone} span-1`}>
+              <div key={stat.key} className={`stat-tile ${stat.tone} span-1`}>
                 <i>{stat.icon}</i>
-                <strong>{stat.value}</strong>
+                <strong>{statByKey.get(stat.key) ?? ""}</strong>
                 <span>{stat.label}</span>
               </div>
             ))}
@@ -167,18 +153,28 @@ export default function AboutPage() {
             The people behind <em style={{ color: "var(--blue)", fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 500 }}>the movement.</em>
           </h2>
           <div className="bento">
-            {teamMembers.map((member) => (
-              <article key={member.name} className={`fun-card ${member.tone} span-1`}>
-                <div className="fun-icon" style={{ fontSize: 18, fontWeight: 700 }}>
-                  {member.name.split(" ").map((part) => part[0]).slice(0, 2).join("")}
-                </div>
-                <h3>{member.name}</h3>
-                <p style={{ color: "var(--blue)", fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: ".1em", textTransform: "uppercase", marginBottom: 10 }}>
-                  {member.role}
-                </p>
-                <p>{member.bio}</p>
-              </article>
-            ))}
+            {teamMembers.length === 0 ? (
+              <p className="empty-state" style={{ gridColumn: "1 / -1" }}>
+                Team bios are on the way. Check back soon.
+              </p>
+            ) : (
+              teamMembers.map((member) => (
+                <article key={member.name} className="fun-card span-1">
+                  <div className="fun-icon" style={{ fontSize: 18, fontWeight: 700 }}>
+                    {member.name
+                      .split(" ")
+                      .map((part) => part[0])
+                      .slice(0, 2)
+                      .join("")}
+                  </div>
+                  <h3>{member.name}</h3>
+                  <p style={{ color: "var(--blue)", fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: ".1em", textTransform: "uppercase", marginBottom: 10 }}>
+                    {member.role}
+                  </p>
+                  <p>{member.bio}</p>
+                </article>
+              ))
+            )}
           </div>
         </div>
       </section>
@@ -194,7 +190,7 @@ export default function AboutPage() {
           </p>
           <div className="button-row" style={{ justifyContent: "center" }}>
             <Link className="btn btn-primary" href="/volunteer">
-              Become a volunteer →
+              Become a volunteer
             </Link>
             <Link className="btn btn-ghost" href="/events">
               See upcoming clean-ups

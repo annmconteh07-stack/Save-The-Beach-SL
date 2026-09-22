@@ -2,12 +2,10 @@ import Link from "next/link";
 
 import SiteFooter from "@/components/site-footer";
 import SiteHeader from "@/components/site-header";
+import MediaGallery from "@/components/media-gallery";
 import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
-
-const accents = ["var(--blue)", "var(--teal)", "var(--coral)", "var(--sun)", "var(--grape)", "var(--pink)"];
-const pills = ["pill-blue", "pill-teal", "pill-pink", "pill-sun", "pill-grape", "pill-aqua"];
 
 export default async function MediaPage() {
   const mediaItems = await prisma.media.findMany({
@@ -77,44 +75,7 @@ export default async function MediaPage() {
 
       <section className="band band-ice">
         <div className="content-width">
-          <div className="chip-row">
-            <span className="pill pill-outline">All moments</span>
-            <span className="pill pill-teal">Photos</span>
-            <span className="pill pill-grape">Videos</span>
-            <span className="pill pill-sun">Clean-ups</span>
-            <span className="pill pill-pink">Community days</span>
-          </div>
-
-          {mediaItems.length === 0 ? (
-            <p className="empty-state">No media posted yet. Check back after the next clean-up.</p>
-          ) : (
-            <div className="media-masonry">
-              {mediaItems.map((item, index) => (
-                <figure
-                  className="media-card"
-                  key={item.id}
-                  style={{ borderTop: `6px solid ${accents[index % accents.length]}` }}
-                >
-                  {item.type === "VIDEO" ? (
-                    <video src={item.url} controls playsInline className="media-visual" preload="metadata" />
-                  ) : (
-                    <img src={item.url} alt={item.caption} className="media-visual" loading="lazy" />
-                  )}
-                  <figcaption>
-                    <span className={`pill ${pills[index % pills.length]}`} style={{ marginBottom: 12 }}>
-                      {item.type === "VIDEO" ? "Video" : "Photo"}
-                    </span>
-                    <p>{item.caption}</p>
-                    <small>
-                      {new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric" }).format(
-                        item.createdAt,
-                      )}
-                    </small>
-                  </figcaption>
-                </figure>
-              ))}
-            </div>
-          )}
+          <MediaGallery mediaItems={mediaItems} />
         </div>
       </section>
 
@@ -128,7 +89,7 @@ export default async function MediaPage() {
           </p>
           <div className="button-row" style={{ justifyContent: "center" }}>
             <Link className="btn btn-primary" href="/volunteer">
-              Join as a volunteer →
+              Join as a volunteer
             </Link>
             <Link className="btn btn-ghost" href="/events">
               See upcoming clean-ups

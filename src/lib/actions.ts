@@ -80,6 +80,20 @@ const mediaSchema = z.object({
   caption: z.string().trim().min(1, "Add a short caption."),
   url: z.string().trim().url("Please enter a valid image or video URL."),
   type: z.enum(["PHOTO", "VIDEO"]),
+  category: z.enum(["", "CLEANUP", "COMMUNITY_DAY"]).transform((value) => (value === "" ? null : value)),
+});
+
+const statsSchema = z.object({
+  bagsCollected: z.string().trim().max(40),
+  beachesCovered: z.string().trim().max(40),
+  cleanupsRun: z.string().trim().max(40),
+  volunteers: z.string().trim().max(40),
+});
+
+const teamMemberSchema = z.object({
+  name: z.string().trim().min(2, "Name must be at least 2 characters long."),
+  role: z.string().trim().min(2, "Role must be at least 2 characters long."),
+  bio: z.string().trim().min(5, "Please write a short bio."),
 });
 
 const profileSchema = z.object({
@@ -455,6 +469,7 @@ export async function addMediaAction(formData: FormData) {
 
   let mediaUrl = "";
   let mediaType: "PHOTO" | "VIDEO" = "PHOTO";
+  const mediaCategory = String(formData.get("category") ?? "").trim() as "" | "CLEANUP" | "COMMUNITY_DAY";
 
   if (mediaFile) {
     try {
@@ -469,6 +484,7 @@ export async function addMediaAction(formData: FormData) {
       caption,
       url: String(formData.get("url") ?? ""),
       type: String(formData.get("type") ?? "PHOTO") as "PHOTO" | "VIDEO",
+      category: mediaCategory,
     });
     mediaUrl = payload.url;
     mediaType = payload.type;
@@ -479,6 +495,7 @@ export async function addMediaAction(formData: FormData) {
       caption,
       url: mediaUrl,
       type: mediaType,
+      category: mediaCategory === "" ? null : mediaCategory,
     },
   });
 
@@ -499,6 +516,80 @@ export async function deleteMediaAction(formData: FormData) {
   revalidatePath("/media");
   revalidatePath("/admin");
   redirect("/admin/media?deleted=1");
+}
+
+const statKeys = ["bagsCollected", "beachesCovered", "cleanupsRun", "volunteers"] as const;
+
+export async function updateStatsAction(formData: FormData) {
+  await requireAdmin();
+
+  const payload = statsSchema.parse({
+    bagsCollected: String(formData.get("bagsCollected") ?? ""),
+    beachesCovered: String(formData.get("beachesCovered") ?? ""),
+    cleanupsRun: String(formData.get("cleanupsRun") ?? ""),
+    volunteers: String(formData.get("volunteers") ?? ""),
+  });
+
+  await prisma.$transaction(
+    statKeys.map((key) =>
+      prisma.siteStat.upsert({
+        where: { key },
+        update: { value: payload[key] },
+        create: { key, value: payload[key] },
+      }),
+    ),
+  );
+
+  revalidatePath("/");
+  revalidatePath("/about");
+  redirect("/admin/stats?updated=1");
+}
+
+export async function createTeamMemberAction(formData: FormData) {
+  await requireAdmin();
+
+  const payload = teamMemberSchema.parse({
+    name: String(formData.get("name") ?? ""),
+    role: String(formData.get("role") ?? ""),
+    bio: String(formData.get("bio") ?? ""),
+  });
+
+  const count = await prisma.teamMember.count();
+  await prisma.teamMember.create({
+    data: { ...payload, sortOrder: count },
+  });
+
+  revalidatePath("/about");
+  redirect("/admin/team?added=1");
+}
+
+export async function updateTeamMemberAction(formData: FormData) {
+  await requireAdmin();
+
+  const id = String(formData.get("id") ?? "");
+  const payload = teamMemberSchema.parse({
+    name: String(formData.get("name") ?? ""),
+    role: String(formData.get("role") ?? ""),
+    bio: String(formData.get("bio") ?? ""),
+  });
+
+  await prisma.teamMember.update({
+    where: { id },
+    data: payload,
+  });
+
+  revalidatePath("/about");
+  redirect("/admin/team?updated=1");
+}
+
+export async function deleteTeamMemberAction(formData: FormData) {
+  await requireAdmin();
+
+  const id = String(formData.get("id") ?? "");
+  await prisma.teamMember.delete({ where: { id } });
+
+  revalidatePath("/about");
+  redirect("/admin/team?deleted=1");
 }
 
 export async function approvePostAction(formData: FormData) {
