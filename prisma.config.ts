@@ -1,6 +1,6 @@
 import "dotenv/config";
 import dotenv from "dotenv";
-import { defineConfig, env } from "prisma/config";
+import { defineConfig } from "prisma/config";
 
 dotenv.config({ path: ".env.local", override: true });
 
@@ -11,6 +11,8 @@ export default defineConfig({
     seed: "node node_modules/tsx/dist/cli.mjs prisma/seed.ts",
   },
   datasource: {
-    url: env("DATABASE_URL"),
+    url:
+      process.env.DATABASE_URL ??
+      "postgresql://postgres:postgres@localhost:5432/postgres",
   },
 });
