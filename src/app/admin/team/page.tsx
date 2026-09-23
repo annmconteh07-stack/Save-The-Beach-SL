@@ -47,15 +47,15 @@ export default async function AdminTeamPage({
           <form className="auth-form" action={createTeamMemberAction}>
             <label>
               Name
-              <input type="text" name="name" placeholder="e.g. Mariama Kamara" required maxLength={120} />
+              <input type="text" name="name" placeholder="e.g. Mariama Kamara" required maxLength={120} minLength={2} />
             </label>
             <label>
               Role
-              <input type="text" name="role" placeholder="e.g. Volunteer coordinator" required maxLength={120} />
+              <input type="text" name="role" placeholder="e.g. Volunteer coordinator" required maxLength={120} minLength={2} />
             </label>
             <label>
               Bio
-              <textarea name="bio" rows={3} placeholder="A short line about their work." required maxLength={400} />
+              <textarea name="bio" rows={3} placeholder="A short line about their work." required maxLength={400} minLength={5} />
             </label>
             <button type="submit" className="blue-button auth-button">
               Add member <span>↗</span>
@@ -90,15 +90,15 @@ export default async function AdminTeamPage({
                     <div style={{ display: "grid", gap: 8 }}>
                       <label>
                         Name
-                        <input type="text" name="name" defaultValue={member.name} required maxLength={120} />
+                        <input type="text" name="name" defaultValue={member.name} required maxLength={120} minLength={2} />
                       </label>
                       <label>
                         Role
-                        <input type="text" name="role" defaultValue={member.role} required maxLength={120} />
+                        <input type="text" name="role" defaultValue={member.role} required maxLength={120} minLength={2} />
                       </label>
                       <label>
                         Bio
-                        <textarea name="bio" rows={2} defaultValue={member.bio} required maxLength={400} />
+                        <textarea name="bio" rows={2} defaultValue={member.bio} required maxLength={400} minLength={5} />
                       </label>
                     </div>
                     <button type="submit" className="btn btn-primary" style={{ marginTop: 8 }}>

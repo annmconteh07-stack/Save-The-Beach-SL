@@ -33,6 +33,7 @@ export default async function EventDetailPage({
     notFound();
   }
 
+  const isPast = event.date.getTime() <= new Date().getTime();
   const spotsLeft = event.capacityLimit > 0 ? Math.max(event.capacityLimit - event.registrations.length, 0) : null;
   const formattedDate = new Intl.DateTimeFormat("en-GB", {
     day: "2-digit",
@@ -90,7 +91,7 @@ export default async function EventDetailPage({
                 <h3 style={{ marginTop: 0 }}>Fully booked.</h3>
                 <p>This clean-up has reached its capacity. Join another event or become a general volunteer.</p>
               </div>
-            ) : eventHasPassed ? (
+            ) : eventHasPassed || isPast ? (
               <div className="notice notice-warn" role="status">
                 <h3 style={{ marginTop: 0 }}>This clean-up has passed.</h3>
                 <p>Registrations are closed. Keep an eye on the events page for the next one.</p>

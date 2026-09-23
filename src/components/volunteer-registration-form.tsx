@@ -6,11 +6,11 @@ export default function VolunteerRegistrationForm() {
       <form className="registration-form" action={submitVolunteerForm}>
         <label>
           Full name
-          <input type="text" name="name" placeholder="Your full name" required />
+          <input type="text" name="name" placeholder="Your full name" minLength={2} required />
         </label>
         <label>
           Phone
-          <input type="tel" name="phone" placeholder="+232 76 123 456" required />
+          <input type="tel" name="phone" placeholder="+232 76 123 456" minLength={7} required />
         </label>
         <label>
           Age

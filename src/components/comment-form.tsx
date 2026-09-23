@@ -12,6 +12,7 @@ export default function CommentForm({ postId }: { postId: string }) {
             rows={3}
             placeholder="Share your thoughts on this story..."
             maxLength={1000}
+            minLength={1}
             required
           />
         </label>

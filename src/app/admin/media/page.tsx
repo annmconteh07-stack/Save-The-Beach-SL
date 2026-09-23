@@ -18,7 +18,7 @@ export default async function AdminMediaPage({
       : null;
   const error = typeof params.error === "string"
     ? params.error === "invalid-file"
-      ? "That file could not be used. Use a photo or video (JPG, PNG, WebP, GIF, MP4, WebM, MOV) under the size limits."
+      ? "That file or URL could not be used. Use a photo or video in a supported format (JPG, PNG, WebP, GIF, AVIF, MP4, WebM, MOV) under the size limits, or paste a direct media link."
       : "Please add a caption and then choose a file or paste a photo/video URL."
     : null;
 

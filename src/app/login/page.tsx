@@ -50,7 +50,7 @@ export default async function LoginPage({
               </label>
               <label>
                 Password
-                <input type="password" name="password" placeholder="••••••••" required />
+                <input type="password" name="password" placeholder="••••••••" minLength={8} required />
               </label>
               <button type="submit" className="btn btn-primary btn-block">
                 Log in

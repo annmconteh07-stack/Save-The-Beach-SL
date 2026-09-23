@@ -480,14 +480,22 @@ export async function addMediaAction(formData: FormData) {
       redirect("/admin/media?error=invalid-file");
     }
   } else {
-    const payload = mediaSchema.parse({
-      caption,
-      url: String(formData.get("url") ?? ""),
-      type: String(formData.get("type") ?? "PHOTO") as "PHOTO" | "VIDEO",
-      category: mediaCategory,
-    });
-    mediaUrl = payload.url;
-    mediaType = payload.type;
+    const url = String(formData.get("url") ?? "");
+    if (!url.trim()) {
+      redirect("/admin/media?error=invalid-file");
+    }
+    try {
+      const payload = mediaSchema.parse({
+        caption,
+        url,
+        type: String(formData.get("type") ?? "PHOTO") as "PHOTO" | "VIDEO",
+        category: mediaCategory,
+      });
+      mediaUrl = payload.url;
+      mediaType = payload.type;
+    } catch {
+      redirect("/admin/media?error=invalid-file");
+    }
   }
 
   await prisma.media.create({

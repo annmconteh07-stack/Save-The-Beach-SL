@@ -5,11 +5,11 @@ export default function EventForm() {
     <form className="auth-form" action={createEventAction}>
       <label>
         Title
-        <input type="text" name="title" placeholder="e.g. Lumley Beach sunrise clean-up" required />
+        <input type="text" name="title" placeholder="e.g. Lumley Beach sunrise clean-up" minLength={3} required />
       </label>
       <label>
         Description
-        <textarea name="description" rows={3} placeholder="What will volunteers do?" required />
+        <textarea name="description" rows={3} placeholder="What will volunteers do?" minLength={10} required />
       </label>
       <label>
         Date and time
@@ -17,7 +17,7 @@ export default function EventForm() {
       </label>
       <label>
         Location
-        <input type="text" name="location" placeholder="e.g. Lumley Beach, Freetown" required />
+        <input type="text" name="location" placeholder="e.g. Lumley Beach, Freetown" minLength={2} required />
       </label>
       <label>
         Capacity limit

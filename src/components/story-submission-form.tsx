@@ -6,11 +6,11 @@ export default function StorySubmissionForm() {
       <form className="auth-form" action={submitStoryAction}>
         <label>
           Title
-          <input type="text" name="title" placeholder="What happened at the shoreline?" required />
+          <input type="text" name="title" placeholder="What happened at the shoreline?" minLength={3} required />
         </label>
         <label>
           Story
-          <textarea name="body" rows={6} placeholder="Tell us what you saw, felt, or learned from the coast..." required />
+          <textarea name="body" rows={6} placeholder="Tell us what you saw, felt, or learned from the coast..." minLength={20} required />
         </label>
         <label>
           Photo (optional)

@@ -109,7 +109,7 @@ export default async function Home() {
           <div className="bento">
             <div className="stat-tile stat-blue span-1">
               <i>🧹</i>
-              <strong>{Math.max(events, 1)}</strong>
+              <strong>{events}</strong>
               <span>clean-ups planned</span>
             </div>
             <div className="stat-tile stat-sun span-1">
