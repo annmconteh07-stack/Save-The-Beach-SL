@@ -8,10 +8,10 @@ const globalForPrisma = globalThis as unknown as {
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
-  max: 5,
-  connectionTimeoutMillis: 10_000,
-  idleTimeoutMillis: 30_000,
-  query_timeout: 15_000,
+  max: 10,
+  connectionTimeoutMillis: 30_000,
+  idleTimeoutMillis: 60_000,
+  query_timeout: 30_000,
   keepAlive: true,
 });
 

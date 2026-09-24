@@ -158,10 +158,15 @@ export async function signUpAction(formData: FormData) {
 }
 
 export async function loginAction(formData: FormData) {
-  const payload = loginSchema.parse({
-    email: String(formData.get("email") ?? ""),
-    password: String(formData.get("password") ?? ""),
-  });
+  let payload: z.infer<typeof loginSchema>;
+  try {
+    payload = loginSchema.parse({
+      email: String(formData.get("email") ?? ""),
+      password: String(formData.get("password") ?? ""),
+    });
+  } catch {
+    redirect("/login?error=invalid-email");
+  }
 
   const user = await prisma.user.findUnique({
     where: { email: payload.email.toLowerCase() },

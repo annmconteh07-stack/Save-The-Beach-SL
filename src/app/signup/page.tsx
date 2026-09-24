@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import SiteFooter from "@/components/site-footer";
 import SiteHeader from "@/components/site-header";
+import PasswordInput from "@/components/password-input";
 import { signUpAction } from "@/lib/actions";
 
 export default async function SignupPage({
@@ -51,10 +52,7 @@ export default async function SignupPage({
                 Email
                 <input type="email" name="email" placeholder="you@example.com" required />
               </label>
-              <label>
-                Password
-                <input type="password" name="password" placeholder="Create a password" minLength={8} required />
-              </label>
+              <PasswordInput name="password" label="Password" placeholder="Create a password" minLength={8} />
               <button type="submit" className="btn btn-primary btn-block">
                 Sign up &amp; stay logged in →
               </button>

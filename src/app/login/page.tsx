@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import SiteFooter from "@/components/site-footer";
 import SiteHeader from "@/components/site-header";
+import PasswordInput from "@/components/password-input";
 import { loginAction } from "@/lib/actions";
 
 export default async function LoginPage({
@@ -12,6 +13,7 @@ export default async function LoginPage({
   const params = (await searchParams) ?? {};
   const next = typeof params.next === "string" ? params.next : "/blog";
   const isInvalid = params.error === "invalid-credentials";
+  const isInvalidEmail = params.error === "invalid-email";
 
   return (
     <main className="page-shell">
@@ -42,16 +44,18 @@ export default async function LoginPage({
                 Invalid email or password. Please try again.
               </div>
             ) : null}
+            {isInvalidEmail ? (
+              <div className="notice notice-danger" role="alert">
+                Please enter a valid email address.
+              </div>
+            ) : null}
             <form className="auth-form" action={loginAction}>
               <input type="hidden" name="next" value={next} />
               <label>
                 Email
                 <input type="email" name="email" placeholder="you@example.com" required />
               </label>
-              <label>
-                Password
-                <input type="password" name="password" placeholder="••••••••" minLength={8} required />
-              </label>
+              <PasswordInput name="password" label="Password" placeholder="••••••••" minLength={8} />
               <button type="submit" className="btn btn-primary btn-block">
                 Log in
               </button>
