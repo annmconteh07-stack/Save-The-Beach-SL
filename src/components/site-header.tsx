@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import MobileNav from "@/components/mobile-nav";
 import { getCurrentUser } from "@/lib/auth";
 
 function profileInitials(name: string) {
@@ -12,7 +13,12 @@ function profileInitials(name: string) {
 }
 
 export default async function SiteHeader() {
-  const currentUser = await getCurrentUser();
+  let currentUser = null;
+  try {
+    currentUser = await getCurrentUser();
+  } catch {
+    currentUser = null;
+  }
 
   return (
     <header className="page-header">
@@ -33,6 +39,10 @@ export default async function SiteHeader() {
           <Link href="/blog">Blog</Link>
           <Link href="/volunteer">Volunteer</Link>
         </div>
+        <MobileNav
+          isLoggedIn={!!currentUser}
+          isAdmin={currentUser?.role === "ADMIN"}
+        />
         <div className="nav-actions">
           {currentUser ? (
             <>

@@ -3,7 +3,12 @@ import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth";
 
 export default async function SiteFooter() {
-  const currentUser = await getCurrentUser();
+  let currentUser = null;
+  try {
+    currentUser = await getCurrentUser();
+  } catch {
+    currentUser = null;
+  }
   const isAdmin = currentUser?.role === "ADMIN";
 
   return (

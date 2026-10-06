@@ -17,12 +17,12 @@ export default async function AdminLayoutShell({
 }) {
   const [currentUser, volunteerCount, registrationCount, eventCount, pendingCount, mediaCount] =
     await Promise.all([
-      getCurrentUser(),
-      prisma.volunteer.count(),
-      prisma.registration.count(),
-      prisma.event.count(),
-      prisma.post.count({ where: { status: "PENDING" } }),
-      prisma.media.count(),
+      getCurrentUser().catch(() => null),
+      prisma.volunteer.count().catch(() => 0),
+      prisma.registration.count().catch(() => 0),
+      prisma.event.count().catch(() => 0),
+      prisma.post.count({ where: { status: "PENDING" } }).catch(() => 0),
+      prisma.media.count().catch(() => 0),
     ]);
 
   const isAdmin = !!(currentUser && currentUser.role === "ADMIN");

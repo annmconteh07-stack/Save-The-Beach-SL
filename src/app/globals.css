@@ -555,3 +555,118 @@
   .profile-stats { grid-template-columns: 1fr; }
   .panel-heading-row { align-items: flex-start; flex-direction: column; }
 }
+
+/* Mobile navigation */
+.mobile-nav { display: none; }
+.mobile-nav-toggle {
+  align-items: center;
+  background: transparent;
+  border: 1px solid rgba(10, 56, 82, 0.15);
+  border-radius: 10px;
+  cursor: pointer;
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  height: 42px;
+  justify-content: center;
+  padding: 0;
+  width: 42px;
+}
+.mobile-nav-toggle span {
+  background: var(--navy);
+  border-radius: 2px;
+  display: block;
+  height: 2px;
+  width: 18px;
+}
+.mobile-nav-panel {
+  background: white;
+  border-bottom: 1px solid rgba(10, 56, 82, 0.08);
+  box-shadow: 0 18px 40px rgba(10, 56, 82, 0.08);
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  z-index: 20;
+}
+.mobile-nav-panel nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 18px 21px 24px;
+}
+.mobile-nav-panel a {
+  border-bottom: 1px solid rgba(10, 56, 82, 0.08);
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  letter-spacing: .06em;
+  padding: 14px 4px;
+  text-transform: uppercase;
+}
+.mobile-nav-panel a:hover { color: var(--coral); }
+.mobile-nav-panel .mobile-nav-login {
+  border-bottom: 0;
+  color: var(--blue);
+  margin-top: 10px;
+}
+.mobile-nav-panel .mobile-nav-signup {
+  background: var(--blue);
+  border-bottom: 0;
+  border-radius: 10px;
+  color: white;
+  font-weight: 700;
+  margin-top: 8px;
+  text-align: center;
+}
+@media (max-width: 700px) {
+  .site-nav { position: relative; }
+  .mobile-nav { display: block; }
+  .mobile-nav-toggle { display: inline-flex; }
+}
+
+/* Admin nav must stay reachable on small screens */
+@media (max-width: 800px) {
+  .admin-sidebar {
+    align-items: stretch;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 18px 18px 16px;
+    width: auto;
+  }
+  .admin-sidebar .brand { margin-bottom: 14px; }
+  .admin-user { display: none; }
+  .admin-sidebar nav {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 6px;
+    margin: 0 0 14px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .admin-sidebar nav a {
+    border-bottom: 2px solid transparent;
+    border-left: 0;
+    flex: 0 0 auto;
+    padding: 10px 12px;
+    white-space: nowrap;
+  }
+  .admin-sidebar nav a.active,
+  .admin-sidebar nav a:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-bottom-color: var(--coral);
+    border-left-color: transparent;
+  }
+  .admin-sidebar .back-home {
+    display: inline-block;
+    margin: 0 14px 0 0;
+  }
+  .admin-sidebar form {
+    display: inline-block;
+    margin-top: 0;
+    vertical-align: middle;
+  }
+  .admin-sidebar form .admin-logout { margin-top: 0; }
+}

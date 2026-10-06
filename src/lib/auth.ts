@@ -13,11 +13,14 @@ export type SessionUser = {
   avatarUrl: string | null;
 };
 
-function getAuthSecret() {
+function getAuthSecret(): Uint8Array | null {
   const secret = process.env.AUTH_SECRET;
   if (!secret) {
     if (process.env.NODE_ENV === "production") {
-      throw new Error("AUTH_SECRET is not set. Set it before deploying.");
+      console.error(
+        "AUTH_SECRET is not set. Add it in Vercel → Project → Settings → Environment Variables, then redeploy.",
+      );
+      return null;
     }
     return new TextEncoder().encode("save-the-beach-local-secret");
   }
@@ -25,6 +28,11 @@ function getAuthSecret() {
 }
 
 export async function createAuthSession(user: SessionUser) {
+  const secret = getAuthSecret();
+  if (!secret) {
+    throw new Error("AUTH_SECRET is not set. Set it before deploying.");
+  }
+
   const token = await new SignJWT({
     sub: user.id,
     email: user.email,
@@ -36,7 +44,7 @@ export async function createAuthSession(user: SessionUser) {
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime(`${SESSION_DAYS}d`)
-    .sign(getAuthSecret());
+    .sign(secret);
 
   const cookieStore = await cookies();
   cookieStore.set(AUTH_COOKIE, token, {
@@ -56,8 +64,13 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
     return null;
   }
 
+  const secret = getAuthSecret();
+  if (!secret) {
+    return null;
+  }
+
   try {
-    const { payload } = await jwtVerify(token, getAuthSecret());
+    const { payload } = await jwtVerify(token, secret);
 
     if (!payload.sub || !payload.email || !payload.name || !payload.role) {
       return null;
