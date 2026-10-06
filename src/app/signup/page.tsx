@@ -54,14 +54,14 @@ export default async function SignupPage({
               </label>
               <PasswordInput name="password" label="Password" placeholder="Create a password" minLength={8} />
               <button type="submit" className="btn btn-primary btn-block">
-                Sign up &amp; stay logged in →
+                Sign up &amp; stay logged in
               </button>
             </form>
             <p className="auth-switch">
               Already have an account? <Link href="/login">Log in</Link>
             </p>
             <Link className="back-link" href="/">
-              ← Back home
+              Back home
             </Link>
           </div>
         </div>

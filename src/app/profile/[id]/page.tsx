@@ -141,7 +141,6 @@ export default async function PublicProfilePage({
                       <span className="comment-count">
                         {post._count.comments} comment{post._count.comments === 1 ? "" : "s"}
                       </span>
-                      <span aria-hidden="true">→</span>
                     </Link>
                   ))
                 )}

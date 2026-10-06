@@ -24,7 +24,7 @@ export default async function VolunteerPage({
       <section className="fun-hero blob-field">
         <span className="blob blob-sun" />
         <span className="blob blob-aqua" />
-        <div className="content-width fun-hero-grid">
+        <div className="content-width fun-hero-grid fun-hero-text-only">
           <div>
             <span className="pill pill-teal">Volunteers</span>
             <h1>
@@ -39,19 +39,6 @@ export default async function VolunteerPage({
               <span className="pill pill-sun">All ages welcome</span>
               <span className="pill pill-pink">Free to join</span>
             </div>
-          </div>
-          <div className="collage" aria-hidden="true">
-            <div className="collage-tile collage-t1">
-              <img src="https://images.unsplash.com/photo-1471922694854-ff1b63b20054?auto=format&fit=crop&w=800&q=80" alt="" />
-            </div>
-            <div className="collage-tile collage-t2">
-              <img src="https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?auto=format&fit=crop&w=800&q=80" alt="" />
-            </div>
-            <div className="collage-tile collage-t3">
-              <img src="https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=800&q=80" alt="" />
-            </div>
-            <span className="collage-chip c1">Over 900 joined</span>
-            <span className="collage-chip c2">Free gloves</span>
           </div>
         </div>
       </section>

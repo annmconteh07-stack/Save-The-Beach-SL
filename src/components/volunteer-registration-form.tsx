@@ -21,7 +21,7 @@ export default function VolunteerRegistrationForm() {
           <input type="email" name="email" placeholder="you@example.com" required />
         </label>
         <button type="submit" className="blue-button auth-button">
-          Join the volunteers <span>↗</span>
+          Join the volunteers
         </button>
       </form>
     </div>

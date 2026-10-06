@@ -49,7 +49,7 @@ export default async function BlogPage({
               <>
                 <span className="pill pill-teal">Posting as {currentUser.name}</span>
                 <Link className="pill pill-blue" href="/blog/new">
-                  Write your own story →
+                  Write your own story
                 </Link>
               </>
             ) : (
@@ -131,7 +131,7 @@ export default async function BlogPage({
                           <span className="comment-count">
                             {post._count.comments} comment{post._count.comments === 1 ? "" : "s"}
                           </span>
-                          <Link href={`/blog/${post.id}`}>Read article →</Link>
+                          <Link href={`/blog/${post.id}`}>Read article</Link>
                         </div>
                       </div>
                     </article>

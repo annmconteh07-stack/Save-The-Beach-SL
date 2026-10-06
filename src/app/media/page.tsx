@@ -12,7 +12,6 @@ export default async function MediaPage() {
     orderBy: { createdAt: "desc" },
   });
 
-  const heroItems = mediaItems.slice(0, 3);
   const photos = mediaItems.filter((item) => item.type === "PHOTO").length;
   const videos = mediaItems.filter((item) => item.type === "VIDEO").length;
 
@@ -23,7 +22,7 @@ export default async function MediaPage() {
       <section className="fun-hero blob-field">
         <span className="blob blob-aqua" />
         <span className="blob blob-pink" />
-        <div className="content-width fun-hero-grid">
+        <div className="content-width fun-hero-grid fun-hero-text-only">
           <div>
             <span className="pill pill-pink">Media gallery</span>
             <h1>
@@ -38,37 +37,6 @@ export default async function MediaPage() {
               <span className="pill pill-grape">{videos} videos</span>
               <span className="pill pill-sun">Updated weekly</span>
             </div>
-          </div>
-          <div className="collage" aria-hidden="true">
-            {heroItems[0] ? (
-              <div className="collage-tile collage-t1">
-                {heroItems[0].type === "VIDEO" ? (
-                  <video src={heroItems[0].url} muted playsInline />
-                ) : (
-                  <img src={heroItems[0].url} alt="" />
-                )}
-              </div>
-            ) : null}
-            {heroItems[1] ? (
-              <div className="collage-tile collage-t2">
-                {heroItems[1].type === "VIDEO" ? (
-                  <video src={heroItems[1].url} muted playsInline />
-                ) : (
-                  <img src={heroItems[1].url} alt="" />
-                )}
-              </div>
-            ) : null}
-            {heroItems[2] ? (
-              <div className="collage-tile collage-t3">
-                {heroItems[2].type === "VIDEO" ? (
-                  <video src={heroItems[2].url} muted playsInline />
-                ) : (
-                  <img src={heroItems[2].url} alt="" />
-                )}
-              </div>
-            ) : null}
-            <span className="collage-chip c1">Field team</span>
-            <span className="collage-chip c2">On the sand</span>
           </div>
         </div>
       </section>

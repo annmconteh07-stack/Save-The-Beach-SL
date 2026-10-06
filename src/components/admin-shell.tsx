@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import BrandMark from "@/components/brand-mark";
 import { logoutAction } from "@/lib/actions";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
@@ -39,10 +40,10 @@ export default async function AdminLayoutShell({
             This area is for the Save The Beach SL admin team. Please log in with an admin account.
           </p>
           <Link className="blue-button auth-button" href="/login?next=%2Fadmin">
-            Log in <span>↗</span>
+            Log in
           </Link>
           <Link className="back-link" href="/">
-            ← Back home
+            Back home
           </Link>
         </div>
       </main>
@@ -53,7 +54,7 @@ export default async function AdminLayoutShell({
     <main className="admin-page">
       <aside className="admin-sidebar">
         <Link className="brand blue-brand" href="/">
-          <span className="brand-mark">STB</span>
+          <BrandMark />
           <span>
             Save The Beach
             <br />
@@ -91,7 +92,7 @@ export default async function AdminLayoutShell({
           </Link>
         </nav>
         <Link className="back-home" href="/">
-          ← Back to website
+          Back to website
         </Link>
         <form action={logoutAction}>
           <button type="submit" className="back-home admin-logout">

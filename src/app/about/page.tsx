@@ -49,7 +49,7 @@ export default async function AboutPage() {
       <section className="fun-hero blob-field">
         <span className="blob blob-sun" />
         <span className="blob blob-aqua" />
-        <div className="content-width fun-hero-grid">
+        <div className="content-width fun-hero-grid fun-hero-text-only">
           <div>
             <span className="pill pill-pink">About us</span>
             <h1>
@@ -65,31 +65,11 @@ export default async function AboutPage() {
               <span className="pill pill-teal">Sierra Leone</span>
             </div>
           </div>
-          <div className="collage" aria-hidden="true">
-            <div className="collage-tile collage-t1">
-              <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80" alt="" />
-            </div>
-            <div className="collage-tile collage-t2">
-              <img src="https://images.unsplash.com/photo-1471922694854-ff1b63b20054?auto=format&fit=crop&w=800&q=80" alt="" />
-            </div>
-            <div className="collage-tile collage-t3">
-              <img src="https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?auto=format&fit=crop&w=800&q=80" alt="" />
-            </div>
-            <span className="collage-chip c1">Tokeh Beach</span>
-            <span className="collage-chip c2">Est. 2025</span>
-          </div>
         </div>
       </section>
 
       <section className="band band-ice">
-        <div className="content-width alt-row">
-          <div className="alt-art">
-            <img src="https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=900&q=80" alt="Volunteers on the shoreline" />
-            <div className="alt-badge">
-              <strong>2025</strong>
-              <span>Our first clean-up</span>
-            </div>
-          </div>
+        <div className="content-width alt-row alt-row-single">
           <div className="alt-copy">
             <span className="pill pill-teal">Our story</span>
             <h2>

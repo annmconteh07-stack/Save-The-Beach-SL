@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import BrandMark from "@/components/brand-mark";
 import MobileNav from "@/components/mobile-nav";
 import { getCurrentUser } from "@/lib/auth";
 
@@ -24,7 +25,7 @@ export default async function SiteHeader() {
     <header className="page-header">
       <nav className="site-nav" aria-label="Main navigation">
         <Link className="brand blue-brand" href="/" aria-label="Save The Beach SL home">
-          <span className="brand-mark">STB</span>
+          <BrandMark />
           <span>
             Save The Beach
             <br />

@@ -106,7 +106,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ id: s
           </div>
 
           <Link className="line-link" href="/blog">
-            Back to journal <span>→</span>
+            Back to journal
           </Link>
         </div>
       </article>

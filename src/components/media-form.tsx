@@ -39,7 +39,7 @@ export default function MediaForm() {
         </select>
       </label>
       <button type="submit" className="blue-button auth-button">
-        Add to gallery <span>↗</span>
+        Add to gallery
       </button>
     </form>
   );

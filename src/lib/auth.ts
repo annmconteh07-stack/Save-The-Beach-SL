@@ -18,7 +18,7 @@ function getAuthSecret(): Uint8Array | null {
   if (!secret) {
     if (process.env.NODE_ENV === "production") {
       console.error(
-        "AUTH_SECRET is not set. Add it in Vercel → Project → Settings → Environment Variables, then redeploy.",
+        "AUTH_SECRET is not set. Add it in Vercel Project Settings Environment Variables, then redeploy.",
       );
       return null;
     }

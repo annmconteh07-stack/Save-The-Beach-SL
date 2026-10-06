@@ -31,7 +31,7 @@ export default async function AdminPage() {
               <h2>Recent volunteers</h2>
             </div>
             <Link className="panel-link" href="/admin/volunteers">
-              View all →
+              View all
             </Link>
           </div>
           {recentVolunteers.length === 0 ? (
@@ -62,7 +62,7 @@ export default async function AdminPage() {
               <h2>Latest posts</h2>
             </div>
             <Link className="panel-link" href="/admin/posts">
-              Moderate →
+              Moderate
             </Link>
           </div>
           {recentPosts.length === 0 ? (

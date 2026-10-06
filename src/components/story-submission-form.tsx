@@ -22,7 +22,7 @@ export default function StorySubmissionForm() {
           <input type="url" name="imageUrl" placeholder="https://example.com/photo.jpg" />
         </label>
         <button type="submit" className="blue-button auth-button">
-          Submit for review <span>↗</span>
+          Submit for review
         </button>
       </form>
     </div>

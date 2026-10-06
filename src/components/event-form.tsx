@@ -24,7 +24,7 @@ export default function EventForm() {
         <input type="number" name="capacityLimit" min={0} defaultValue={40} required />
       </label>
       <button type="submit" className="blue-button auth-button">
-        Publish event <span>↗</span>
+        Publish event
       </button>
     </form>
   );

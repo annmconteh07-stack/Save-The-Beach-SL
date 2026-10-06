@@ -30,7 +30,7 @@ export default function EventRegistrationForm({ eventId }: { eventId: string }) 
           <textarea name="notes" rows={4} placeholder="Anything we should know before the cleanup?" />
         </label>
         <button type="submit" className="blue-button auth-button">
-          Reserve my spot <span>↗</span>
+          Reserve my spot
         </button>
       </form>
     </div>

@@ -43,7 +43,7 @@ export default async function NewBlogPostPage({
           ) : null}
           <StorySubmissionForm />
           <Link className="back-link" href="/blog">
-            ← Back to journal
+            Back to journal
           </Link>
         </div>
       </section>

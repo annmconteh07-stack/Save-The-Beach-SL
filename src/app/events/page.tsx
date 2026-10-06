@@ -78,7 +78,7 @@ export default async function EventsPage() {
                 <div className="event-actions">
                   <span>{spotsLeft === null ? "Open to all" : `${spotsLeft} spots left`}</span>
                   <Link href={`/events/${event.id}`}>
-                    View details <b>↗</b>
+                    View details
                   </Link>
                 </div>
               </article>

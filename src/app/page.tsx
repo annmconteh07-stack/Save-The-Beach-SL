@@ -44,7 +44,7 @@ export default async function Home() {
               Become a volunteer
             </Link>
             <Link className="hero-text-link" href="#mission">
-              Discover our work <span>↓</span>
+              Discover our work
             </Link>
           </div>
         </div>
@@ -102,7 +102,7 @@ export default async function Home() {
                 do here matters far beyond the shoreline.
               </p>
               <Link className="line-link" href="/about">
-                More about our story <span>↗</span>
+                More about our story
               </Link>
             </div>
           </div>
@@ -142,7 +142,7 @@ export default async function Home() {
               </h2>
             </div>
             <Link className="outline-button" href="/media">
-              Open the gallery <span>→</span>
+              Open the gallery
             </Link>
           </div>
           <div className="gallery-strip-grid">
@@ -171,7 +171,7 @@ export default async function Home() {
             <em>the shore.</em>
           </h2>
           <Link className="blue-button" href="/volunteer">
-            Join the volunteers <span>↗</span>
+            Join the volunteers
           </Link>
         </div>
       </section>

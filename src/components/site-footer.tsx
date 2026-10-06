@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import BrandMark from "@/components/brand-mark";
 import { getCurrentUser } from "@/lib/auth";
 
 export default async function SiteFooter() {
@@ -15,7 +16,7 @@ export default async function SiteFooter() {
     <footer className="site-footer" id="about">
       <div className="content-width footer-grid">
         <div className="brand blue-brand">
-          <span className="brand-mark">STB</span>
+          <BrandMark />
           <span>
             Save The Beach
             <br />
@@ -32,7 +33,7 @@ export default async function SiteFooter() {
           <Link href="/volunteer">Register as a volunteer</Link>
           <Link href="/media">Media gallery</Link>
           <Link href="/blog">Community blog</Link>
-          {isAdmin ? <Link href="/admin">Admin portal ↗</Link> : null}
+          {isAdmin ? <Link href="/admin">Admin portal</Link> : null}
         </div>
         <small>© 2026 Save The Beach SL</small>
       </div>

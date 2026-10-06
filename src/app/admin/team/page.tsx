@@ -58,7 +58,7 @@ export default async function AdminTeamPage({
               <textarea name="bio" rows={3} placeholder="A short line about their work." required maxLength={400} minLength={5} />
             </label>
             <button type="submit" className="blue-button auth-button">
-              Add member <span>↗</span>
+              Add member
             </button>
           </form>
         </section>

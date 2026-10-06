@@ -72,7 +72,7 @@ export default function ProfileEditor({
             </fieldset>
             <div className="button-row">
               <button type="submit" className="btn btn-primary">
-                Save changes →
+                Save changes
               </button>
               <button type="button" className="btn btn-ghost" onClick={() => setEditing(false)}>
                 Cancel

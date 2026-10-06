@@ -17,7 +17,7 @@ export default function CommentForm({ postId }: { postId: string }) {
           />
         </label>
         <button type="submit" className="blue-button auth-button">
-          Post comment <span>↗</span>
+          Post comment
         </button>
       </form>
     </div>

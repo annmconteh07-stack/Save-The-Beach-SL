@@ -55,7 +55,7 @@ export default async function AdminStatsPage({
             </label>
           ))}
           <button type="submit" className="blue-button auth-button">
-            Save stats <span>↗</span>
+            Save stats
           </button>
         </form>
       </section>

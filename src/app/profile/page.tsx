@@ -149,7 +149,7 @@ export default async function ProfilePage({
                   <h3>Your submissions</h3>
                 </div>
                 <Link className="btn btn-primary" href="/blog/new">
-                  Write a new story →
+                  Write a new story
                 </Link>
               </div>
 

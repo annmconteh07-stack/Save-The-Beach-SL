@@ -119,7 +119,7 @@ export default async function EventDetailPage({
         </div>
         <div className="content-width">
           <Link className="back-link" href="/events">
-            ← Back to all clean-ups
+            Back to all clean-ups
           </Link>
         </div>
       </section>
