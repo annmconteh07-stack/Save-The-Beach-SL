@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import BrandMark from "@/components/brand-mark";
 import MobileNav from "@/components/mobile-nav";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, isAdminRole } from "@/lib/auth";
 
 function profileInitials(name: string) {
   return name
@@ -20,6 +20,13 @@ export default async function SiteHeader() {
   } catch {
     currentUser = null;
   }
+
+  const profileHref =
+    currentUser?.role === "MEDIA_ADMIN"
+      ? "/media-admin"
+      : isAdminRole(currentUser?.role)
+        ? "/volunteer-admin"
+        : "/profile";
 
   return (
     <header className="page-header">
@@ -40,7 +47,7 @@ export default async function SiteHeader() {
           <Link href="/blog">Blog</Link>
           <Link href="/volunteer">Volunteer</Link>
         </div>
-        <MobileNav isLoggedIn={!!currentUser} />
+        <MobileNav isLoggedIn={!!currentUser} profileHref={profileHref} />
         <div className="nav-actions">
           {currentUser ? (
             <>
@@ -52,7 +59,7 @@ export default async function SiteHeader() {
               <Link className="nav-button" href="/blog/new">
                 Write a post
               </Link>
-              <Link className="nav-profile" href="/profile" aria-label="View your profile">
+              <Link className="nav-profile" href={profileHref} aria-label="View your profile">
                 {currentUser.avatarUrl ? (
                   <img src={currentUser.avatarUrl} alt="" className="nav-avatar-img" />
                 ) : (

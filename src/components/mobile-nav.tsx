@@ -14,8 +14,10 @@ const LINKS = [
 
 export default function MobileNav({
   isLoggedIn = false,
+  profileHref = "/profile",
 }: {
   isLoggedIn?: boolean;
+  profileHref?: string;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -52,7 +54,7 @@ export default function MobileNav({
             </Link>
           ))}
           {isLoggedIn ? (
-            <Link href="/profile" onClick={() => setOpen(false)}>
+            <Link href={profileHref} onClick={() => setOpen(false)}>
               My profile
             </Link>
           ) : (
