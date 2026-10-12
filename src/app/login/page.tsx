@@ -1,9 +1,11 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 import SiteFooter from "@/components/site-footer";
 import SiteHeader from "@/components/site-header";
 import PasswordInput from "@/components/password-input";
 import { loginAction } from "@/lib/actions";
+import { getCurrentUser, isAdminRole } from "@/lib/auth";
 
 export default async function LoginPage({
   searchParams,
@@ -14,6 +16,11 @@ export default async function LoginPage({
   const next = typeof params.next === "string" ? params.next : "/blog";
   const isInvalid = params.error === "invalid-credentials";
   const isInvalidEmail = params.error === "invalid-email";
+
+  const loggedIn = await getCurrentUser();
+  if (loggedIn && isAdminRole(loggedIn.role)) {
+    redirect(loggedIn.role === "MEDIA_ADMIN" ? "/media-admin" : "/volunteer-admin");
+  }
 
   return (
     <main className="page-shell">

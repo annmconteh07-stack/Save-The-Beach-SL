@@ -14,10 +14,8 @@ const LINKS = [
 
 export default function MobileNav({
   isLoggedIn = false,
-  role = null,
 }: {
   isLoggedIn?: boolean;
-  role?: string | null;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -53,15 +51,6 @@ export default function MobileNav({
               {link.label}
             </Link>
           ))}
-          {role === "MEDIA_ADMIN" ? (
-            <Link href="/media-admin" onClick={() => setOpen(false)}>
-              Media admin portal
-            </Link>
-          ) : role === "VOLUNTEER_ADMIN" || role === "ADMIN" ? (
-            <Link href="/volunteer-admin" onClick={() => setOpen(false)}>
-              {role === "ADMIN" ? "Admin portal" : "Volunteer admin portal"}
-            </Link>
-          ) : null}
           {isLoggedIn ? (
             <Link href="/profile" onClick={() => setOpen(false)}>
               My profile

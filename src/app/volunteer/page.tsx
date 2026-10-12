@@ -16,6 +16,7 @@ export default async function VolunteerPage({
 }) {
   const params = (await searchParams) ?? {};
   const registered = params.registered === "1";
+  const error = typeof params.error === "string" ? params.error : null;
 
   return (
     <main className="page-shell">
@@ -88,6 +89,20 @@ export default async function VolunteerPage({
               </div>
             ) : (
               <>
+                {error ? (
+                  <div className="notice notice-danger" role="alert" style={{ marginBottom: 16 }}>
+                    <h3 style={{ marginTop: 0 }}>
+                      {error === "invalid"
+                        ? "Double-check your details."
+                        : "We could not save your details."}
+                    </h3>
+                    <p>
+                      {error === "invalid"
+                        ? "Your name, email, and phone are required, and your age must be 13 or over."
+                        : "Something went wrong on our side. Please try again in a moment."}
+                    </p>
+                  </div>
+                ) : null}
                 <span className="pill pill-teal" style={{ marginBottom: 16 }}>Volunteer registration</span>
                 <h3 style={{ marginTop: 0 }}>Count me in</h3>
                 <p className="form-message">Just your name, phone, and email.</p>

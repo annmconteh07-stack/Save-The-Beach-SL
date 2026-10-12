@@ -325,15 +325,23 @@ export async function logoutAction() {
 }
 
 export async function submitEventRegistration(formData: FormData) {
-  const payload = registrationSchema.parse({
-    eventId: String(formData.get("eventId") ?? ""),
-    name: String(formData.get("name") ?? ""),
-    email: String(formData.get("email") ?? ""),
-    phone: String(formData.get("phone") ?? ""),
-    age: formData.get("age") ?? "",
-    emergencyContact: String(formData.get("emergencyContact") ?? ""),
-    notes: String(formData.get("notes") ?? ""),
-  });
+  const rawEventId = String(formData.get("eventId") ?? "");
+  const backTo = rawEventId ? `/events/${rawEventId}` : "/events";
+
+  let payload: z.infer<typeof registrationSchema>;
+  try {
+    payload = registrationSchema.parse({
+      eventId: rawEventId,
+      name: String(formData.get("name") ?? ""),
+      email: String(formData.get("email") ?? ""),
+      phone: String(formData.get("phone") ?? ""),
+      age: formData.get("age") ?? "",
+      emergencyContact: String(formData.get("emergencyContact") ?? ""),
+      notes: String(formData.get("notes") ?? ""),
+    });
+  } catch {
+    redirect(`${backTo}?registered=error`);
+  }
 
   const event = await prisma.event.findUnique({
     where: { id: payload.eventId },
@@ -349,53 +357,67 @@ export async function submitEventRegistration(formData: FormData) {
 
   const email = payload.email.toLowerCase();
 
-  const outcome = await prisma.$transaction(async (tx) => {
-    const alreadyRegistered = await tx.registration.findFirst({
-      where: { eventId: event.id, email },
+  let outcome = "error";
+  try {
+    outcome = await prisma.$transaction(async (tx) => {
+      const alreadyRegistered = await tx.registration.findFirst({
+        where: { eventId: event.id, email },
+      });
+      if (alreadyRegistered) {
+        return "duplicate";
+      }
+
+      const count = await tx.registration.count({ where: { eventId: event.id } });
+      if (event.capacityLimit > 0 && count >= event.capacityLimit) {
+        return "full";
+      }
+
+      await tx.registration.create({
+        data: {
+          name: payload.name,
+          email,
+          phone: payload.phone,
+          age: payload.age,
+          emergencyContact: payload.emergencyContact || null,
+          notes: payload.notes || null,
+          eventId: event.id,
+        },
+      });
+
+      return "ok";
     });
-    if (alreadyRegistered) {
-      return "duplicate";
-    }
-
-    const count = await tx.registration.count({ where: { eventId: event.id } });
-    if (event.capacityLimit > 0 && count >= event.capacityLimit) {
-      return "full";
-    }
-
-    await tx.registration.create({
-      data: {
-        name: payload.name,
-        email,
-        phone: payload.phone,
-        age: payload.age,
-        emergencyContact: payload.emergencyContact || null,
-        notes: payload.notes || null,
-        eventId: event.id,
-      },
-    });
-
-    return "ok";
-  });
+  } catch {
+    outcome = "error";
+  }
 
   redirect(`/events/${event.id}?registered=${outcome === "ok" ? "1" : outcome}`);
 }
 
 export async function submitVolunteerForm(formData: FormData) {
-  const payload = volunteerSchema.parse({
-    name: String(formData.get("name") ?? ""),
-    phone: String(formData.get("phone") ?? ""),
-    email: String(formData.get("email") ?? ""),
-    age: formData.get("age") ?? "",
-  });
+  let payload: z.infer<typeof volunteerSchema>;
+  try {
+    payload = volunteerSchema.parse({
+      name: String(formData.get("name") ?? ""),
+      phone: String(formData.get("phone") ?? ""),
+      email: String(formData.get("email") ?? ""),
+      age: formData.get("age") ?? "",
+    });
+  } catch {
+    redirect("/volunteer?error=invalid");
+  }
 
-  await prisma.volunteer.create({
-    data: {
-      name: payload.name,
-      email: payload.email.toLowerCase(),
-      phone: payload.phone,
-      age: payload.age,
-    },
-  });
+  try {
+    await prisma.volunteer.create({
+      data: {
+        name: payload.name,
+        email: payload.email.toLowerCase(),
+        phone: payload.phone,
+        age: payload.age,
+      },
+    });
+  } catch {
+    redirect("/volunteer?error=save-failed");
+  }
 
   redirect("/volunteer?registered=1");
 }

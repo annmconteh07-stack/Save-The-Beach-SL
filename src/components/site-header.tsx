@@ -40,25 +40,13 @@ export default async function SiteHeader() {
           <Link href="/blog">Blog</Link>
           <Link href="/volunteer">Volunteer</Link>
         </div>
-        <MobileNav
-          isLoggedIn={!!currentUser}
-          role={currentUser?.role ?? null}
-        />
+        <MobileNav isLoggedIn={!!currentUser} />
         <div className="nav-actions">
           {currentUser ? (
             <>
               {!currentUser.emailVerified ? (
                 <Link className="nav-verify" href="/verify">
                   Verify email
-                </Link>
-              ) : null}
-              {currentUser.role === "MEDIA_ADMIN" ? (
-                <Link className="admin-link" href="/media-admin">
-                  Media admin
-                </Link>
-              ) : currentUser.role === "VOLUNTEER_ADMIN" || currentUser.role === "ADMIN" ? (
-                <Link className="admin-link" href="/volunteer-admin">
-                  {currentUser.role === "ADMIN" ? "Admin" : "Volunteer admin"}
                 </Link>
               ) : null}
               <Link className="nav-button" href="/blog/new">

@@ -21,6 +21,7 @@ export default async function EventDetailPage({
   const alreadyRegistered = sp.registered === "duplicate";
   const eventIsFull = sp.registered === "full";
   const eventHasPassed = sp.registered === "past";
+  const registerError = sp.registered === "error";
 
   const event = await prisma.event.findUnique({
     where: { id },
@@ -103,6 +104,15 @@ export default async function EventDetailPage({
               </div>
             ) : (
               <>
+                {registerError ? (
+                  <div className="notice notice-danger" role="alert" style={{ marginBottom: 16 }}>
+                    <h3 style={{ marginTop: 0 }}>We could not take your registration.</h3>
+                    <p>
+                      Check your details and try again — name, email, phone, and age (13+). If it
+                      keeps failing, contact us directly.
+                    </p>
+                  </div>
+                ) : null}
                 <p className="card-label">Volunteer registration</p>
                 <div className="event-meta-row">
                   <span>Date</span>
