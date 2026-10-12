@@ -75,6 +75,12 @@ export default async function VolunteerAdminPostsPage({
                       Reject
                     </button>
                   </form>
+                  <form action={deletePostAction}>
+                    <input type="hidden" name="id" value={post.id} />
+                    <button type="submit" className="delete-button" aria-label="Delete post">
+                      Delete
+                    </button>
+                  </form>
                 </div>
               </div>
             ))}
