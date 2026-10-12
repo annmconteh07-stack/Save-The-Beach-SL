@@ -9,8 +9,15 @@ import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
-export default async function BlogPostPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function BlogPostPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const { id } = await params;
+  const sp = (await searchParams) ?? {};
   const currentUser = await getCurrentUser();
 
   const post = await prisma.post.findUnique({
@@ -28,11 +35,15 @@ export default async function BlogPostPage({ params }: { params: Promise<{ id: s
     notFound();
   }
 
-  const isAdminView = post.status !== "APPROVED" && isVolunteerAdmin(currentUser);
+  const isPreviewView =
+    post.status !== "APPROVED" &&
+    (isVolunteerAdmin(currentUser) || post.authorId === currentUser?.id);
 
-  if (post.status !== "APPROVED" && !isAdminView) {
+  if (post.status !== "APPROVED" && !isPreviewView) {
     notFound();
   }
+
+  const justSubmitted = sp.from === "new" && post.status === "PENDING" && post.authorId === currentUser?.id;
 
   const paragraphs = post.body.split(/\n+/).filter(Boolean);
 
@@ -53,9 +64,14 @@ export default async function BlogPostPage({ params }: { params: Promise<{ id: s
 
       <article className="content-section article-layout">
         <div className="content-width article-body">
-          {isAdminView ? (
+          {justSubmitted ? (
+            <div className="notice notice-success" role="status" style={{ marginBottom: 24 }}>
+              Story submitted. A member of our team will review it — it goes live to everyone once approved.
+            </div>
+          ) : null}
+          {isPreviewView ? (
             <div className="preview-notice">
-              <span>Preview</span> This post is {post.status.toLowerCase()} and only visible to admins.
+              <span>Preview</span> This story is {post.status.toLowerCase()} and only visible to you and admins.
             </div>
           ) : null}
           {post.imageUrl ? <img src={post.imageUrl} alt={post.title} className="article-image" /> : null}

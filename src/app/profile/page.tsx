@@ -168,7 +168,9 @@ export default async function ProfilePage({
                   posts.map((post) => (
                     <div className="profile-post-item" key={post.id}>
                       <div>
-                        <strong>{post.title}</strong>
+                        <Link href={`/blog/${post.id}`}>
+                          <strong>{post.title}</strong>
+                        </Link>
                         <small>
                           {new Intl.DateTimeFormat("en-GB", {
                             day: "numeric",

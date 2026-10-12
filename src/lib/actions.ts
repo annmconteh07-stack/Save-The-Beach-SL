@@ -454,7 +454,7 @@ export async function submitStoryAction(formData: FormData) {
     }
   }
 
-  await prisma.post.create({
+  const post = await prisma.post.create({
     data: {
       title: payload.title,
       body: payload.body,
@@ -465,7 +465,7 @@ export async function submitStoryAction(formData: FormData) {
   });
 
   revalidatePath("/blog");
-  redirect("/blog?status=submitted");
+  redirect(`/blog/${post.id}?from=new`);
 }
 
 export async function submitCommentAction(formData: FormData) {
