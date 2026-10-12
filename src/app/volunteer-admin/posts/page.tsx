@@ -1,12 +1,12 @@
 import Link from "next/link";
 
-import AdminLayoutShell from "@/components/admin-shell";
+import VolunteerAdminLayoutShell from "@/components/volunteer-admin-shell";
 import { approvePostAction, deletePostAction, rejectPostAction } from "@/lib/actions";
 import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminPostsPage({
+export default async function VolunteerAdminPostsPage({
   searchParams,
 }: {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
@@ -33,7 +33,7 @@ export default async function AdminPostsPage({
   });
 
   return (
-    <AdminLayoutShell title="Blog" description="Moderate stories and manage everything published on the journal.">
+    <VolunteerAdminLayoutShell title="Blog" description="Moderate stories and manage everything published on the journal.">
       {notice ? (
         <div className="success-panel admin-notice">
           <p>{notice}</p>
@@ -121,6 +121,6 @@ export default async function AdminPostsPage({
           </div>
         )}
       </section>
-    </AdminLayoutShell>
+    </VolunteerAdminLayoutShell>
   );
 }

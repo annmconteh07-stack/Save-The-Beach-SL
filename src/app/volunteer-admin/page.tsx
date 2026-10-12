@@ -1,11 +1,11 @@
 import Link from "next/link";
 
-import AdminLayoutShell from "@/components/admin-shell";
+import VolunteerAdminLayoutShell from "@/components/volunteer-admin-shell";
 import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminPage() {
+export default async function VolunteerAdminPage() {
   const [recentVolunteers, recentPosts] = await Promise.all([
     prisma.volunteer.findMany({
       orderBy: { createdAt: "desc" },
@@ -19,8 +19,8 @@ export default async function AdminPage() {
   ]);
 
   return (
-    <AdminLayoutShell
-      title="Control room"
+    <VolunteerAdminLayoutShell
+      title="Volunteer control room"
       description="Everything across your coastline, in one place."
     >
       <div className="admin-columns">
@@ -30,7 +30,7 @@ export default async function AdminPage() {
               <p className="admin-kicker">Keep the dates moving</p>
               <h2>Recent volunteers</h2>
             </div>
-            <Link className="panel-link" href="/admin/volunteers">
+            <Link className="panel-link" href="/volunteer-admin/volunteers">
               View all
             </Link>
           </div>
@@ -61,7 +61,7 @@ export default async function AdminPage() {
               <p className="admin-kicker">Give voices a platform</p>
               <h2>Latest posts</h2>
             </div>
-            <Link className="panel-link" href="/admin/posts">
+            <Link className="panel-link" href="/volunteer-admin/posts">
               Moderate
             </Link>
           </div>
@@ -89,6 +89,6 @@ export default async function AdminPage() {
           )}
         </section>
       </div>
-    </AdminLayoutShell>
+    </VolunteerAdminLayoutShell>
   );
 }

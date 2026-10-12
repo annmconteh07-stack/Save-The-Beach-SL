@@ -9,6 +9,8 @@ datasource db {
 
 enum Role {
   CONTRIBUTOR
+  VOLUNTEER_ADMIN
+  MEDIA_ADMIN
   ADMIN
 }
 

@@ -1,11 +1,11 @@
-import AdminLayoutShell from "@/components/admin-shell";
+import VolunteerAdminLayoutShell from "@/components/volunteer-admin-shell";
 import EventForm from "@/components/event-form";
 import { deleteEventAction } from "@/lib/actions";
 import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminEventsPage({
+export default async function VolunteerAdminEventsPage({
   searchParams,
 }: {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
@@ -23,7 +23,7 @@ export default async function AdminEventsPage({
   });
 
   return (
-    <AdminLayoutShell title="Events" description="Create clean-ups, post dates and times, and delete events.">
+    <VolunteerAdminLayoutShell title="Events" description="Create clean-ups, post dates and times, and delete events.">
       {notice ? (
         <div className="success-panel admin-notice">
           <p>{notice}</p>
@@ -84,6 +84,6 @@ export default async function AdminEventsPage({
           )}
         </section>
       </div>
-    </AdminLayoutShell>
+    </VolunteerAdminLayoutShell>
   );
 }

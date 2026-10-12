@@ -1,4 +1,4 @@
-import AdminLayoutShell from "@/components/admin-shell";
+import VolunteerAdminLayoutShell from "@/components/volunteer-admin-shell";
 import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -14,7 +14,7 @@ export default async function AdminVolunteersPage() {
   });
 
   return (
-    <AdminLayoutShell title="Volunteers" description="Everyone who has signed up to help.">
+    <VolunteerAdminLayoutShell title="Volunteers" description="Everyone who has signed up to help.">
       <div className="admin-columns">
         <section className="admin-panel">
           <div className="panel-heading">
@@ -94,6 +94,6 @@ export default async function AdminVolunteersPage() {
           )}
         </section>
       </div>
-    </AdminLayoutShell>
+    </VolunteerAdminLayoutShell>
   );
 }

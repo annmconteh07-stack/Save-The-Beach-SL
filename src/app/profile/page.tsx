@@ -109,8 +109,14 @@ export default async function ProfilePage({
               />
               <h2>{user.name}</h2>
               <p className="profile-role">
-                <span className={`pill ${user.role === "ADMIN" ? "pill-pink" : "pill-teal"}`}>
-                  {user.role === "ADMIN" ? "Admin" : "Contributor"}
+                <span className={`pill ${user.role === "CONTRIBUTOR" ? "pill-teal" : "pill-pink"}`}>
+                  {user.role === "ADMIN"
+                    ? "Super Admin"
+                    : user.role === "VOLUNTEER_ADMIN"
+                      ? "Volunteer Admin"
+                      : user.role === "MEDIA_ADMIN"
+                        ? "Media Admin"
+                        : "Contributor"}
                 </span>
               </p>
               <p className="profile-joined">

@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
-import { clearAuthSession, createAuthSession, getCurrentUser } from "@/lib/auth";
+import { clearAuthSession, createAuthSession, getCurrentUser, isAdminRole, isMediaAdmin, isVolunteerAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { sendVerificationEmail } from "@/lib/mailer";
 import { deleteStoredFile, detectMediaKind, saveUpload } from "@/lib/uploads";
@@ -101,10 +101,18 @@ const profileSchema = z.object({
   profileVisibility: z.enum(["PUBLIC", "PRIVATE"]),
 });
 
-async function requireAdmin() {
+async function requireVolunteerAdmin() {
   const currentUser = await getCurrentUser();
-  if (!currentUser || currentUser.role !== "ADMIN") {
-    redirect("/login?next=%2Fadmin");
+  if (!currentUser || !isVolunteerAdmin(currentUser)) {
+    redirect("/volunteer-admin/login?next=%2Fvolunteer-admin");
+  }
+  return currentUser;
+}
+
+async function requireMediaAdmin() {
+  const currentUser = await getCurrentUser();
+  if (!currentUser || !isMediaAdmin(currentUser)) {
+    redirect("/media-admin/login?next=%2Fmedia-admin");
   }
   return currentUser;
 }
@@ -185,8 +193,57 @@ export async function loginAction(formData: FormData) {
     avatarUrl: user.avatarUrl,
   });
 
-  const nextPath = safeRedirect(String(formData.get("next") ?? ""), "/blog");
+  const fallback = isAdminRole(user.role)
+    ? user.role === "MEDIA_ADMIN"
+      ? "/media-admin"
+      : "/volunteer-admin"
+    : "/blog";
+  const nextPath = safeRedirect(String(formData.get("next") ?? ""), fallback);
   redirect(nextPath);
+}
+
+async function authenticateAdmin(formData: FormData, portal: "volunteer-admin" | "media-admin") {
+  let payload: z.infer<typeof loginSchema>;
+  try {
+    payload = loginSchema.parse({
+      email: String(formData.get("email") ?? ""),
+      password: String(formData.get("password") ?? ""),
+    });
+  } catch {
+    redirect(`/${portal}/login?error=invalid-email`);
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email: payload.email.toLowerCase() },
+  });
+
+  if (!user || !(await bcrypt.compare(payload.password, user.passwordHash))) {
+    redirect(`/${portal}/login?error=invalid-credentials`);
+  }
+
+  const allowed = portal === "volunteer-admin" ? isVolunteerAdmin(user) : isMediaAdmin(user);
+  if (!allowed) {
+    redirect(`/${portal}/login?error=forbidden`);
+  }
+
+  await createAuthSession({
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    role: user.role,
+    emailVerified: user.emailVerified,
+    avatarUrl: user.avatarUrl,
+  });
+
+  redirect(`/${portal}`);
+}
+
+export async function volunteerAdminLoginAction(formData: FormData) {
+  await authenticateAdmin(formData, "volunteer-admin");
+}
+
+export async function mediaAdminLoginAction(formData: FormData) {
+  await authenticateAdmin(formData, "media-admin");
 }
 
 export async function verifyEmailAction(formData: FormData) {
@@ -426,7 +483,7 @@ export async function submitCommentAction(formData: FormData) {
 }
 
 export async function createEventAction(formData: FormData) {
-  await requireAdmin();
+  await requireVolunteerAdmin();
 
   const payload = eventSchema.parse({
     title: String(formData.get("title") ?? ""),
@@ -447,29 +504,29 @@ export async function createEventAction(formData: FormData) {
   });
 
   revalidatePath("/events");
-  redirect("/admin/events?created=1");
+  redirect("/volunteer-admin/events?created=1");
 }
 
 export async function deleteEventAction(formData: FormData) {
-  await requireAdmin();
+  await requireVolunteerAdmin();
 
   const id = String(formData.get("id") ?? "");
   await prisma.event.delete({ where: { id } });
 
   revalidatePath("/events");
-  revalidatePath("/admin");
-  redirect("/admin/events?deleted=1");
+  revalidatePath("/volunteer-admin");
+  redirect("/volunteer-admin/events?deleted=1");
 }
 
 export async function addMediaAction(formData: FormData) {
-  await requireAdmin();
+  await requireMediaAdmin();
 
   const caption = String(formData.get("caption") ?? "").trim();
   const fileEntry = formData.get("file");
   const mediaFile = fileEntry instanceof File ? fileEntry : null;
 
   if (caption.length < 1) {
-    redirect("/admin/media?error=caption");
+    redirect("/media-admin?error=caption");
   }
 
   let mediaUrl = "";
@@ -482,12 +539,12 @@ export async function addMediaAction(formData: FormData) {
       mediaUrl = uploaded.url;
       mediaType = uploaded.kind;
     } catch {
-      redirect("/admin/media?error=invalid-file");
+      redirect("/media-admin?error=invalid-file");
     }
   } else {
     const url = String(formData.get("url") ?? "");
     if (!url.trim()) {
-      redirect("/admin/media?error=invalid-file");
+      redirect("/media-admin?error=invalid-file");
     }
     try {
       const payload = mediaSchema.parse({
@@ -499,7 +556,7 @@ export async function addMediaAction(formData: FormData) {
       mediaUrl = payload.url;
       mediaType = payload.type;
     } catch {
-      redirect("/admin/media?error=invalid-file");
+      redirect("/media-admin?error=invalid-file");
     }
   }
 
@@ -513,11 +570,11 @@ export async function addMediaAction(formData: FormData) {
   });
 
   revalidatePath("/media");
-  redirect("/admin/media?added=1");
+  redirect("/media-admin?added=1");
 }
 
 export async function deleteMediaAction(formData: FormData) {
-  await requireAdmin();
+  await requireMediaAdmin();
 
   const id = String(formData.get("id") ?? "");
   const media = await prisma.media.findUnique({ where: { id } });
@@ -527,14 +584,14 @@ export async function deleteMediaAction(formData: FormData) {
   await prisma.media.delete({ where: { id } });
 
   revalidatePath("/media");
-  revalidatePath("/admin");
-  redirect("/admin/media?deleted=1");
+  revalidatePath("/media-admin");
+  redirect("/media-admin?deleted=1");
 }
 
 const statKeys = ["bagsCollected", "beachesCovered", "cleanupsRun", "volunteers"] as const;
 
 export async function updateStatsAction(formData: FormData) {
-  await requireAdmin();
+  await requireVolunteerAdmin();
 
   const payload = statsSchema.parse({
     bagsCollected: String(formData.get("bagsCollected") ?? ""),
@@ -555,11 +612,11 @@ export async function updateStatsAction(formData: FormData) {
 
   revalidatePath("/");
   revalidatePath("/about");
-  redirect("/admin/stats?updated=1");
+  redirect("/volunteer-admin/stats?updated=1");
 }
 
 export async function createTeamMemberAction(formData: FormData) {
-  await requireAdmin();
+  await requireVolunteerAdmin();
 
   const payload = teamMemberSchema.parse({
     name: String(formData.get("name") ?? ""),
@@ -573,11 +630,11 @@ export async function createTeamMemberAction(formData: FormData) {
   });
 
   revalidatePath("/about");
-  redirect("/admin/team?added=1");
+  redirect("/volunteer-admin/team?added=1");
 }
 
 export async function updateTeamMemberAction(formData: FormData) {
-  await requireAdmin();
+  await requireVolunteerAdmin();
 
   const id = String(formData.get("id") ?? "");
   const payload = teamMemberSchema.parse({
@@ -592,21 +649,21 @@ export async function updateTeamMemberAction(formData: FormData) {
   });
 
   revalidatePath("/about");
-  redirect("/admin/team?updated=1");
+  redirect("/volunteer-admin/team?updated=1");
 }
 
 export async function deleteTeamMemberAction(formData: FormData) {
-  await requireAdmin();
+  await requireVolunteerAdmin();
 
   const id = String(formData.get("id") ?? "");
   await prisma.teamMember.delete({ where: { id } });
 
   revalidatePath("/about");
-  redirect("/admin/team?deleted=1");
+  redirect("/volunteer-admin/team?deleted=1");
 }
 
 export async function approvePostAction(formData: FormData) {
-  await requireAdmin();
+  await requireVolunteerAdmin();
 
   const id = String(formData.get("id") ?? "");
   await prisma.post.update({
@@ -615,12 +672,12 @@ export async function approvePostAction(formData: FormData) {
   });
 
   revalidatePath("/blog");
-  revalidatePath("/admin");
-  redirect("/admin/posts?approved=1");
+  revalidatePath("/volunteer-admin");
+  redirect("/volunteer-admin/posts?approved=1");
 }
 
 export async function rejectPostAction(formData: FormData) {
-  await requireAdmin();
+  await requireVolunteerAdmin();
 
   const id = String(formData.get("id") ?? "");
   await prisma.post.update({
@@ -628,12 +685,12 @@ export async function rejectPostAction(formData: FormData) {
     data: { status: "REJECTED" },
   });
 
-  revalidatePath("/admin");
-  redirect("/admin/posts?rejected=1");
+  revalidatePath("/volunteer-admin");
+  redirect("/volunteer-admin/posts?rejected=1");
 }
 
 export async function deletePostAction(formData: FormData) {
-  await requireAdmin();
+  await requireVolunteerAdmin();
 
   const id = String(formData.get("id") ?? "");
   const post = await prisma.post.findUnique({ where: { id } });
@@ -643,8 +700,8 @@ export async function deletePostAction(formData: FormData) {
   await prisma.post.delete({ where: { id } });
 
   revalidatePath("/blog");
-  revalidatePath("/admin");
-  redirect("/admin/posts?deleted=1");
+  revalidatePath("/volunteer-admin");
+  redirect("/volunteer-admin/posts?deleted=1");
 }
 
 export async function updateProfileAction(formData: FormData) {

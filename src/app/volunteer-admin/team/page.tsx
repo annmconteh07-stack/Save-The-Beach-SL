@@ -1,4 +1,4 @@
-import AdminLayoutShell from "@/components/admin-shell";
+import VolunteerAdminLayoutShell from "@/components/volunteer-admin-shell";
 import {
   createTeamMemberAction,
   deleteTeamMemberAction,
@@ -28,7 +28,7 @@ export default async function AdminTeamPage({
   });
 
   return (
-    <AdminLayoutShell title="Team" description="The people shown in the team section on the About page.">
+    <VolunteerAdminLayoutShell title="Team" description="The people shown in the team section on the About page.">
       {notice ? (
         <div className="success-panel admin-notice">
           <p>{notice}</p>
@@ -117,6 +117,6 @@ export default async function AdminTeamPage({
           )}
         </section>
       </div>
-    </AdminLayoutShell>
+    </VolunteerAdminLayoutShell>
   );
 }

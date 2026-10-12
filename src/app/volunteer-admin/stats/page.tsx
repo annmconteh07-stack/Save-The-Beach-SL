@@ -1,4 +1,4 @@
-import AdminLayoutShell from "@/components/admin-shell";
+import VolunteerAdminLayoutShell from "@/components/volunteer-admin-shell";
 import { updateStatsAction } from "@/lib/actions";
 import { prisma } from "@/lib/db";
 
@@ -11,7 +11,7 @@ const statFields = [
   { key: "volunteers", label: "Volunteers strong", hint: 'e.g. "900"' },
 ];
 
-export default async function AdminStatsPage({
+export default async function VolunteerAdminStatsPage({
   searchParams,
 }: {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
@@ -23,7 +23,7 @@ export default async function AdminStatsPage({
   const statsByKey = new Map(stats.map((stat) => [stat.key, stat.value]));
 
   return (
-    <AdminLayoutShell title="Impact stats" description="The numbers shown in the stat tiles on the home and about pages.">
+    <VolunteerAdminLayoutShell title="Impact stats" description="The numbers shown in the stat tiles on the home and about pages.">
       {notice ? (
         <div className="success-panel admin-notice">
           <p>{notice}</p>
@@ -59,6 +59,6 @@ export default async function AdminStatsPage({
           </button>
         </form>
       </section>
-    </AdminLayoutShell>
+    </VolunteerAdminLayoutShell>
   );
 }

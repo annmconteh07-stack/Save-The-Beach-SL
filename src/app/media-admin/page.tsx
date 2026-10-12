@@ -1,11 +1,11 @@
-import AdminLayoutShell from "@/components/admin-shell";
+import MediaAdminLayoutShell from "@/components/media-admin-shell";
 import MediaForm from "@/components/media-form";
 import { deleteMediaAction } from "@/lib/actions";
 import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminMediaPage({
+export default async function MediaAdminPage({
   searchParams,
 }: {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
@@ -27,7 +27,7 @@ export default async function AdminMediaPage({
   });
 
   return (
-    <AdminLayoutShell title="Media" description="Post photos and videos taken during clean-ups.">
+    <MediaAdminLayoutShell title="Media" description="Post photos and videos taken during clean-ups.">
       {notice ? (
         <div className="success-panel admin-notice">
           <p>{notice}</p>
@@ -95,6 +95,6 @@ export default async function AdminMediaPage({
           )}
         </section>
       </div>
-    </AdminLayoutShell>
+    </MediaAdminLayoutShell>
   );
 }

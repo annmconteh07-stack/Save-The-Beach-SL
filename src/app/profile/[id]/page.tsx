@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 
 import SiteFooter from "@/components/site-footer";
 import SiteHeader from "@/components/site-header";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, isAdminRole } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -44,7 +44,7 @@ export default async function PublicProfilePage({
   }
 
   const isOwner = currentUser?.id === user.id;
-  const isAdmin = currentUser?.role === "ADMIN";
+  const isAdmin = isAdminRole(currentUser?.role);
 
   if (user.profileVisibility === "PRIVATE" && !isOwner && !isAdmin) {
     notFound();
@@ -87,8 +87,14 @@ export default async function PublicProfilePage({
               <div className={`profile-avatar-lg ${tone}`}>{initials}</div>
               <h2>{user.name}</h2>
               <p className="profile-role">
-                <span className={`pill ${user.role === "ADMIN" ? "pill-pink" : "pill-teal"}`}>
-                  {user.role === "ADMIN" ? "Admin" : "Contributor"}
+                <span className={`pill ${user.role === "CONTRIBUTOR" ? "pill-teal" : "pill-pink"}`}>
+                  {user.role === "ADMIN"
+                    ? "Super Admin"
+                    : user.role === "VOLUNTEER_ADMIN"
+                      ? "Volunteer Admin"
+                      : user.role === "MEDIA_ADMIN"
+                        ? "Media Admin"
+                        : "Contributor"}
                 </span>
               </p>
               <p className="profile-joined">

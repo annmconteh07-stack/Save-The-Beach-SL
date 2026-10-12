@@ -10,7 +10,8 @@ export default async function SiteFooter() {
   } catch {
     currentUser = null;
   }
-  const isAdmin = currentUser?.role === "ADMIN";
+  const isMediaAdmin = currentUser?.role === "MEDIA_ADMIN";
+  const isVolunteerAdmin = currentUser?.role === "VOLUNTEER_ADMIN" || currentUser?.role === "ADMIN";
 
   return (
     <footer className="site-footer" id="about">
@@ -33,7 +34,8 @@ export default async function SiteFooter() {
           <Link href="/volunteer">Register as a volunteer</Link>
           <Link href="/media">Media gallery</Link>
           <Link href="/blog">Community blog</Link>
-          {isAdmin ? <Link href="/admin">Admin portal</Link> : null}
+          {isMediaAdmin ? <Link href="/media-admin">Media admin portal</Link> : null}
+          {isVolunteerAdmin ? <Link href="/volunteer-admin">Volunteer admin portal</Link> : null}
         </div>
         <small>© 2026 Save The Beach SL</small>
       </div>

@@ -42,7 +42,7 @@ export default async function SiteHeader() {
         </div>
         <MobileNav
           isLoggedIn={!!currentUser}
-          isAdmin={currentUser?.role === "ADMIN"}
+          role={currentUser?.role ?? null}
         />
         <div className="nav-actions">
           {currentUser ? (
@@ -52,9 +52,13 @@ export default async function SiteHeader() {
                   Verify email
                 </Link>
               ) : null}
-              {currentUser.role === "ADMIN" ? (
-                <Link className="admin-link" href="/admin">
-                  Admin
+              {currentUser.role === "MEDIA_ADMIN" ? (
+                <Link className="admin-link" href="/media-admin">
+                  Media admin
+                </Link>
+              ) : currentUser.role === "VOLUNTEER_ADMIN" || currentUser.role === "ADMIN" ? (
+                <Link className="admin-link" href="/volunteer-admin">
+                  {currentUser.role === "ADMIN" ? "Admin" : "Volunteer admin"}
                 </Link>
               ) : null}
               <Link className="nav-button" href="/blog/new">

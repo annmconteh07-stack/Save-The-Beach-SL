@@ -13,6 +13,20 @@ export type SessionUser = {
   avatarUrl: string | null;
 };
 
+export type AdminRole = "VOLUNTEER_ADMIN" | "MEDIA_ADMIN" | "ADMIN";
+
+export function isVolunteerAdmin(user: { role: string } | null | undefined) {
+  return !!user && (user.role === "VOLUNTEER_ADMIN" || user.role === "ADMIN");
+}
+
+export function isMediaAdmin(user: { role: string } | null | undefined) {
+  return !!user && (user.role === "MEDIA_ADMIN" || user.role === "ADMIN");
+}
+
+export function isAdminRole(role: string | undefined): role is AdminRole {
+  return role === "VOLUNTEER_ADMIN" || role === "MEDIA_ADMIN" || role === "ADMIN";
+}
+
 function getAuthSecret(): Uint8Array | null {
   const secret = process.env.AUTH_SECRET;
   if (!secret) {

@@ -16,26 +16,42 @@ const prisma = new PrismaClient({ adapter });
 
 const ADMIN_EMAIL = "admin@savethebeach.sl";
 const ADMIN_PASSWORD = "STBadmin@2026!";
+const VOLUNTEER_ADMIN_EMAIL = "volunteer-admin@savethebeach.sl";
+const VOLUNTEER_ADMIN_PASSWORD = "STBvolunteer@2026!";
+const MEDIA_ADMIN_EMAIL = "media-admin@savethebeach.sl";
+const MEDIA_ADMIN_PASSWORD = "STBmedia@2026!";
 
-async function main() {
+async function upsertAdmin(email: string, password: string, name: string, role: Role) {
+  const passwordHash = await bcrypt.hash(password, 12);
   await prisma.user.upsert({
-    where: { email: ADMIN_EMAIL },
+    where: { email },
     update: {
-      name: "Admin",
-      passwordHash: await bcrypt.hash(ADMIN_PASSWORD, 12),
-      role: Role.ADMIN,
+      name,
+      passwordHash,
+      role,
       emailVerified: true,
       verifyToken: null,
       verifyTokenExpires: null,
     },
     create: {
-      name: "Admin",
-      email: ADMIN_EMAIL,
-      passwordHash: await bcrypt.hash(ADMIN_PASSWORD, 12),
-      role: Role.ADMIN,
+      name,
+      email,
+      passwordHash,
+      role,
       emailVerified: true,
     },
   });
+}
+
+async function main() {
+  await upsertAdmin(ADMIN_EMAIL, ADMIN_PASSWORD, "Admin", Role.ADMIN);
+  await upsertAdmin(
+    VOLUNTEER_ADMIN_EMAIL,
+    VOLUNTEER_ADMIN_PASSWORD,
+    "Volunteer Admin",
+    Role.VOLUNTEER_ADMIN,
+  );
+  await upsertAdmin(MEDIA_ADMIN_EMAIL, MEDIA_ADMIN_PASSWORD, "Media Admin", Role.MEDIA_ADMIN);
 
   const statDefaults = [
     { key: "bagsCollected", value: "" },
@@ -55,8 +71,9 @@ async function main() {
 main()
   .then(async () => {
     console.log("\nAdmin credentials:");
-    console.log(`  Email:    ${ADMIN_EMAIL}`);
-    console.log(`  Password: ${ADMIN_PASSWORD}\n`);
+    console.log(`  Super admin:    ${ADMIN_EMAIL} / ${ADMIN_PASSWORD}`);
+    console.log(`  Volunteer admin: ${VOLUNTEER_ADMIN_EMAIL} / ${VOLUNTEER_ADMIN_PASSWORD}`);
+    console.log(`  Media admin:     ${MEDIA_ADMIN_EMAIL} / ${MEDIA_ADMIN_PASSWORD}\n`);
     await prisma.$disconnect();
   })
   .catch(async (error) => {

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import CommentForm from "@/components/comment-form";
 import SiteFooter from "@/components/site-footer";
 import SiteHeader from "@/components/site-header";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, isVolunteerAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -28,7 +28,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ id: s
     notFound();
   }
 
-  const isAdminView = post.status !== "APPROVED" && currentUser?.role === "ADMIN";
+  const isAdminView = post.status !== "APPROVED" && isVolunteerAdmin(currentUser);
 
   if (post.status !== "APPROVED" && !isAdminView) {
     notFound();
