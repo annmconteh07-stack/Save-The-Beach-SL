@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import SiteFooter from "@/components/site-footer";
 import SiteHeader from "@/components/site-header";
 import ProfileEditor from "@/components/profile-editor";
-import { logoutAction } from "@/lib/actions";
+import { deleteAccountAction, logoutAction } from "@/lib/actions";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
@@ -36,6 +36,7 @@ export default async function ProfilePage({
   const updated = params.updated === "1";
   const avatarError = params.error === "avatar-invalid";
   const uploadError = params.error === "avatar-upload-failed";
+  const deleteError = params.error === "delete-confirm";
 
   const [user, postCount, approvedCount, pendingCount, rejectedCount, commentCount, posts] =
     await Promise.all([
@@ -95,6 +96,11 @@ export default async function ProfilePage({
           {uploadError ? (
             <div className="notice notice-danger" role="alert">
               Your avatar could not be uploaded. Please try again.
+            </div>
+          ) : null}
+          {deleteError ? (
+            <div className="notice notice-danger" role="alert">
+              Please confirm that you understand before deleting your account.
             </div>
           ) : null}
 
@@ -193,6 +199,24 @@ export default async function ProfilePage({
               submit a revised version.
             </p>
           ) : null}
+
+          <div className="profile-danger">
+            <div>
+              <h3>Delete your account</h3>
+              <p>
+                This permanently removes your account, your stories and your comments. This action cannot be undone.
+              </p>
+            </div>
+            <form action={deleteAccountAction} className="profile-danger-form">
+              <label className="profile-danger-confirm">
+                <input type="checkbox" name="confirm" value="1" required />
+                I understand this cannot be undone.
+              </label>
+              <button type="submit" className="btn btn-danger">
+                Delete my account
+              </button>
+            </form>
+          </div>
         </div>
       </section>
 

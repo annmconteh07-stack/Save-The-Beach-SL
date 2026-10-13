@@ -248,7 +248,7 @@ export async function mediaAdminLoginAction(formData: FormData) {
 
 export async function verifyEmailAction(formData: FormData) {
   const code = String(formData.get("code") ?? "").trim();
-  const nextPath = safeRedirect(String(formData.get("next") ?? ""), "/verify?status=verified");
+  const nextPath = safeRedirect(String(formData.get("next") ?? ""), "/blog");
 
   if (!/^\d{6}$/.test(code)) {
     redirect("/verify?status=invalid");
@@ -322,6 +322,33 @@ export async function resendVerificationAction() {
 export async function logoutAction() {
   await clearAuthSession();
   redirect("/");
+}
+
+export async function deleteAccountAction(formData: FormData) {
+  const currentUser = await getCurrentUser();
+
+  if (!currentUser) {
+    redirect("/login?next=%2Fprofile");
+  }
+
+  if (String(formData.get("confirm") ?? "") !== "1") {
+    redirect("/profile?error=delete-confirm");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: currentUser.id },
+    include: { posts: { select: { imageUrl: true } } },
+  });
+
+  if (user) {
+    await deleteStoredFile(user.avatarUrl);
+    await Promise.all(user.posts.map((post) => deleteStoredFile(post.imageUrl)));
+    await prisma.user.delete({ where: { id: user.id } });
+  }
+
+  await clearAuthSession();
+  revalidatePath("/blog");
+  redirect("/?account=deleted");
 }
 
 export async function submitEventRegistration(formData: FormData) {

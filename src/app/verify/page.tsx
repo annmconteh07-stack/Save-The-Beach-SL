@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 import { getCurrentUser } from "@/lib/auth";
 import { resendVerificationAction, verifyEmailAction } from "@/lib/actions";
@@ -38,12 +39,22 @@ const MESSAGES: Record<string, { tone: string; title: string; body: string }> = 
   },
 };
 
+function safeNext(value: unknown) {
+  if (typeof value === "string" && value.startsWith("/") && !value.startsWith("//")) {
+    return value;
+  }
+  return "";
+}
+
 export default async function VerifyPage({ searchParams }: PageProps<"/verify">) {
   const params = await searchParams;
   const status = typeof params.status === "string" ? params.status : undefined;
-  const next = typeof params.next === "string" ? params.next : "/blog";
-  const redirectAfterVerify = typeof params.next === "string" ? params.next : "";
+  const nextPath = safeNext(params.next);
   const user = await getCurrentUser();
+
+  if (user?.emailVerified) {
+    redirect(nextPath || "/blog");
+  }
 
   const message = status ? MESSAGES[status] : undefined;
 
@@ -52,7 +63,7 @@ export default async function VerifyPage({ searchParams }: PageProps<"/verify">)
       <div className="verify-card">
         <span className="eyebrow">Account verification</span>
 
-        {user && !user.emailVerified ? (
+        {user ? (
           <>
             <h1>{message?.title ?? "Enter your code"}</h1>
             <p className="verify-lead">
@@ -60,7 +71,7 @@ export default async function VerifyPage({ searchParams }: PageProps<"/verify">)
               below to confirm your account.
             </p>
             <form action={verifyEmailAction} className="verify-form">
-              <input type="hidden" name="next" value={redirectAfterVerify} />
+              <input type="hidden" name="next" value={nextPath} />
               <label className="verify-code-label">
                 Confirmation code
                 <input
@@ -88,7 +99,7 @@ export default async function VerifyPage({ searchParams }: PageProps<"/verify">)
           </>
         )}
 
-        {message && status !== "sent" ? (
+        {message && user && status !== "sent" ? (
           <div className={`notice notice-${message.tone}`} role="status">
             {message.body}
           </div>
@@ -97,16 +108,13 @@ export default async function VerifyPage({ searchParams }: PageProps<"/verify">)
         {user ? (
           <div className="verify-account">
             <p>
-              Signed in as <strong>{user.email}</strong>
-              {user.emailVerified ? " (verified)" : " (not yet verified)"}
+              Signed in as <strong>{user.email}</strong> (not yet verified)
             </p>
-            {!user.emailVerified ? (
-              <form action={resendVerificationAction}>
-                <button type="submit" className="btn btn-ghost">
-                  Resend confirmation code
-                </button>
-              </form>
-            ) : null}
+            <form action={resendVerificationAction}>
+              <button type="submit" className="btn btn-ghost">
+                Resend confirmation code
+              </button>
+            </form>
           </div>
         ) : (
           <div className="verify-account">
@@ -122,9 +130,9 @@ export default async function VerifyPage({ searchParams }: PageProps<"/verify">)
           </div>
         )}
 
-        {!(user && !user.emailVerified) ? (
-          <Link className="back-link" href={next}>
-            Continue to the site
+        {!user ? (
+          <Link className="back-link" href="/">
+            Back home
           </Link>
         ) : null}
       </div>
