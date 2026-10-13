@@ -74,7 +74,6 @@ export default async function BlogPostPage({
               <span>Preview</span> This story is {post.status.toLowerCase()} and only visible to you and admins.
             </div>
           ) : null}
-          {post.imageUrl ? <img src={post.imageUrl} alt={post.title} className="article-image" /> : null}
           {paragraphs.map((paragraph) => (
             <p key={paragraph}>{paragraph}</p>
           ))}
