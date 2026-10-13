@@ -117,6 +117,14 @@ async function requireMediaAdmin() {
   return currentUser;
 }
 
+async function requireSuperAdmin() {
+  const currentUser = await getCurrentUser();
+  if (!currentUser || currentUser.role !== "ADMIN") {
+    redirect("/volunteer-admin/login?next=%2Fvolunteer-admin%2Fmembers");
+  }
+  return currentUser;
+}
+
 export async function signUpAction(formData: FormData) {
   const payload = signupSchema.parse({
     name: String(formData.get("name") ?? ""),
@@ -349,6 +357,33 @@ export async function deleteAccountAction(formData: FormData) {
   await clearAuthSession();
   revalidatePath("/blog");
   redirect("/?account=deleted");
+}
+
+export async function adminDeleteAccountAction(formData: FormData) {
+  await requireSuperAdmin();
+
+  const id = String(formData.get("id") ?? "");
+
+  if (String(formData.get("confirm") ?? "") !== "1") {
+    redirect("/volunteer-admin/members?error=confirm");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id },
+    include: { posts: { select: { imageUrl: true } } },
+  });
+
+  if (!user || user.role !== "CONTRIBUTOR") {
+    redirect("/volunteer-admin/members?error=protected");
+  }
+
+  await deleteStoredFile(user.avatarUrl);
+  await Promise.all(user.posts.map((post) => deleteStoredFile(post.imageUrl)));
+  await prisma.user.delete({ where: { id: user.id } });
+
+  revalidatePath("/blog");
+  revalidatePath("/volunteer-admin");
+  redirect("/volunteer-admin/members?deleted=1");
 }
 
 export async function submitEventRegistration(formData: FormData) {

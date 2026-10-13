@@ -24,6 +24,19 @@
 @media (max-width: 800px) { .admin-page { display: block; }.admin-sidebar { min-height: auto; padding: 20px 22px; width: auto; }.admin-user, .admin-sidebar nav { display: none; }.back-home { margin-top: 22px; }.admin-main { padding: 33px 22px 45px; }.admin-stats, .admin-columns { grid-template-columns: 1fr 1fr; }.admin-columns { display: block; }.admin-panel + .admin-panel { margin-top: 18px; }.registrations-panel { overflow-x: auto; }.registrations-panel table { min-width: 600px; } }
 @media (max-width: 500px) { .admin-stats { grid-template-columns: 1fr; }.admin-header h1 { font-size: 32px; } }
 
+/* Bolder admin copy for legibility */
+.admin-main { font-weight: 500; }
+.admin-kicker, .admin-sidebar nav a, .back-home, .panel-link { font-weight: 500; }
+.admin-header p:last-child { font-weight: 500; }
+.admin-stats span, .admin-stats small { font-weight: 500; }
+.admin-stats strong { font-weight: 700; }
+.panel-heading h2 { font-weight: 700; }
+th { font-weight: 500; }
+td { font-weight: 500; }
+td small, .admin-event-row small, .post-review small, .admin-post-item small, .volunteer-item small { font-weight: 500; }
+.admin-event-row > div:nth-child(2) > strong, .post-review strong, .admin-post-item strong, .volunteer-item strong { font-weight: 700; }
+.empty-state { font-weight: 500; }
+
 .page-shell { background: var(--ice); color: var(--navy); min-height: 100vh; }
 .page-header { background: white; border-bottom: 1px solid rgba(10, 56, 82, 0.08); }
 .page-hero { background: linear-gradient(180deg, rgba(10, 123, 179, 0.06), rgba(10, 123, 179, 0)); padding: 88px 0 72px; }

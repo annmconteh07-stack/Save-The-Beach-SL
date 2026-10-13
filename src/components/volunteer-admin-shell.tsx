@@ -91,6 +91,11 @@ export default async function VolunteerAdminLayoutShell({
           <Link href="/volunteer-admin/team" className={title === "Team" ? "active" : ""}>
             Team
           </Link>
+          {currentUser!.role === "ADMIN" ? (
+            <Link href="/volunteer-admin/members" className={title === "Members" ? "active" : ""}>
+              Members
+            </Link>
+          ) : null}
         </nav>
         {currentUser!.role === "ADMIN" ? (
           <Link className="back-home" href="/media-admin">
