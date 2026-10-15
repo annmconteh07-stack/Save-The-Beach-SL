@@ -49,6 +49,7 @@ model User {
   createdAt          DateTime            @default(now())
   posts              Post[]
   comments           Comment[]
+  mediaComments      MediaComment[]
 }
 
 model Event {
@@ -115,8 +116,21 @@ model Media {
   albumId   String?
   position  Int            @default(0)
   createdAt DateTime       @default(now())
+  comments  MediaComment[]
 
   @@index([albumId])
+}
+
+model MediaComment {
+  id        String   @id @default(cuid())
+  body      String
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  mediaId   String
+  media     Media    @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([mediaId])
 }
 
 model SiteStat {

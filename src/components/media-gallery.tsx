@@ -1,6 +1,16 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
+
+import { submitMediaCommentAction } from "@/lib/actions";
+
+type MediaComment = {
+  id: string;
+  body: string;
+  createdAt: Date;
+  author: { name: string };
+};
 
 type MediaItem = {
   id: string;
@@ -11,6 +21,7 @@ type MediaItem = {
   albumId: string | null;
   position: number;
   createdAt: Date;
+  comments: MediaComment[];
 };
 
 type MediaGroup = { id: string; items: MediaItem[] };
@@ -51,6 +62,16 @@ function groupMedia(items: MediaItem[]): MediaGroup[] {
   }));
 }
 
+function initials(name: string) {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .map((part) => part[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+}
+
 function MediaVisual({ item }: { item: MediaItem }) {
   if (item.type === "VIDEO") {
     return (
@@ -87,7 +108,13 @@ function Collage({ items, onOpen }: { items: MediaItem[]; onOpen: (index: number
   );
 }
 
-export default function MediaGallery({ mediaItems }: { mediaItems: MediaItem[] }) {
+export default function MediaGallery({
+  mediaItems,
+  currentUser,
+}: {
+  mediaItems: MediaItem[];
+  currentUser: { name: string } | null;
+}) {
   const [active, setActive] = useState<FilterKey>("ALL");
   const [lightbox, setLightbox] = useState<{ items: MediaItem[]; index: number } | null>(null);
 
@@ -146,6 +173,7 @@ export default function MediaGallery({ mediaItems }: { mediaItems: MediaItem[] }
             return (
               <figure
                 className="media-card media-post"
+                id={`media-${lead.id}`}
                 key={group.id}
                 style={{ borderTop: `6px solid ${accents[index % accents.length]}` }}
               >
@@ -157,6 +185,44 @@ export default function MediaGallery({ mediaItems }: { mediaItems: MediaItem[] }
                       lead.createdAt,
                     )}
                   </small>
+
+                  <div className="media-comments">
+                    {lead.comments.length > 0 ? (
+                      <div className="media-comment-list">
+                        {lead.comments.map((comment) => (
+                          <div className="media-comment" key={comment.id}>
+                            <span className="media-comment-avatar" aria-hidden="true">
+                              {initials(comment.author.name)}
+                            </span>
+                            <div className="media-comment-body">
+                              <strong>{comment.author.name}</strong>
+                              <p>{comment.body}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : null}
+
+                    {currentUser ? (
+                      <form className="media-comment-form" action={submitMediaCommentAction}>
+                        <input type="hidden" name="mediaId" value={lead.id} />
+                        <textarea
+                          name="body"
+                          rows={2}
+                          maxLength={1000}
+                          placeholder="Write a comment..."
+                          required
+                        />
+                        <button type="submit" className="blue-button auth-button">
+                          Comment
+                        </button>
+                      </form>
+                    ) : (
+                      <p className="media-comment-login">
+                        <Link href="/login?next=%2Fmedia">Log in</Link> to join the conversation.
+                      </p>
+                    )}
+                  </div>
                 </figcaption>
               </figure>
             );

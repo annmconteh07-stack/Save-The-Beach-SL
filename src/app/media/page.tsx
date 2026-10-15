@@ -3,13 +3,21 @@ import Link from "next/link";
 import SiteFooter from "@/components/site-footer";
 import SiteHeader from "@/components/site-header";
 import MediaGallery from "@/components/media-gallery";
+import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
 export default async function MediaPage() {
+  const currentUser = await getCurrentUser();
   const mediaItems = await prisma.media.findMany({
     orderBy: { createdAt: "desc" },
+    include: {
+      comments: {
+        orderBy: { createdAt: "asc" },
+        include: { author: { select: { name: true } } },
+      },
+    },
   });
 
   const photos = mediaItems.filter((item) => item.type === "PHOTO").length;
@@ -43,7 +51,7 @@ export default async function MediaPage() {
 
       <section className="band band-ice">
         <div className="content-width">
-          <MediaGallery mediaItems={mediaItems} />
+          <MediaGallery mediaItems={mediaItems} currentUser={currentUser} />
         </div>
       </section>
 

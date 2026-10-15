@@ -68,6 +68,11 @@ const commentSchema = z.object({
   body: z.string().trim().min(1, "Write something before submitting.").max(1000, "Comments are limited to 1000 characters."),
 });
 
+const mediaCommentSchema = z.object({
+  mediaId: z.string().min(1),
+  body: z.string().trim().min(1, "Write something before submitting.").max(1000, "Comments are limited to 1000 characters."),
+});
+
 const eventSchema = z.object({
   title: z.string().trim().min(3, "Title must be at least 3 characters long."),
   description: z.string().trim().min(10, "Please describe the event."),
@@ -557,6 +562,43 @@ export async function submitCommentAction(formData: FormData) {
 
   revalidatePath(`/blog/${payload.postId}`);
   redirect(`/blog/${payload.postId}#comments`);
+}
+
+export async function submitMediaCommentAction(formData: FormData) {
+  const currentUser = await getCurrentUser();
+
+  if (!currentUser) {
+    redirect("/login?next=%2Fmedia");
+  }
+
+  if (!currentUser.emailVerified) {
+    redirect("/verify?status=required&next=%2Fmedia");
+  }
+
+  const payload = mediaCommentSchema.parse({
+    mediaId: String(formData.get("mediaId") ?? ""),
+    body: String(formData.get("body") ?? ""),
+  });
+
+  const media = await prisma.media.findUnique({
+    where: { id: payload.mediaId },
+    select: { id: true },
+  });
+
+  if (!media) {
+    redirect("/media");
+  }
+
+  await prisma.mediaComment.create({
+    data: {
+      body: payload.body,
+      authorId: currentUser.id,
+      mediaId: payload.mediaId,
+    },
+  });
+
+  revalidatePath("/media");
+  redirect(`/media#media-${payload.mediaId}`);
 }
 
 export async function createEventAction(formData: FormData) {

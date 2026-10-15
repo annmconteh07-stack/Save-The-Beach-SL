@@ -157,6 +157,18 @@ td small, .admin-event-row small, .post-review small, .admin-post-item small, .v
 .media-card figcaption { padding: 18px 20px 20px; }
 .media-card figcaption p { color: #23415e; font-size: 14px; line-height: 1.7; margin: 10px 0 6px; }
 .media-card figcaption small { color: #6e8799; font-family: 'DM Mono', monospace; font-size: 8px; text-transform: uppercase; }
+.media-comments { border-top: 1px solid rgba(10, 56, 82, 0.08); margin-top: 16px; padding-top: 14px; }
+.media-comment-list { display: grid; gap: 12px; margin-bottom: 14px; }
+.media-comment { align-items: flex-start; display: flex; gap: 10px; }
+.media-comment-avatar { align-items: center; background: var(--teal); border-radius: 50%; color: white; display: flex; flex: 0 0 32px; font-family: 'DM Mono', monospace; font-size: 11px; height: 32px; justify-content: center; text-transform: uppercase; width: 32px; }
+.media-card .media-comment-body strong { color: #0a3852; display: block; font-size: 13px; }
+.media-card .media-comment-body p { color: #3a5a72; font-size: 14px; line-height: 1.6; margin: 2px 0 0; white-space: pre-wrap; }
+.media-comment-form { align-items: flex-end; display: flex; gap: 10px; }
+.media-comment-form textarea { border: 1px solid rgba(10, 56, 82, 0.16); border-radius: 12px; flex: 1; font: inherit; font-size: 14px; padding: 10px 12px; resize: vertical; }
+.media-comment-form textarea:focus { border-color: var(--blue); outline: none; }
+.media-comment-form .auth-button { margin: 0; white-space: nowrap; }
+.media-card figcaption .media-comment-login { color: #5a7488; font-size: 13px; margin: 0; }
+.media-card figcaption .media-comment-login a { color: var(--blue); font-weight: 600; }
 .media-badge { background: var(--coral); border-radius: 20px; color: white; display: inline-block; font-family: 'DM Mono', monospace; font-size: 8px; padding: 4px 9px; text-transform: uppercase; }
 .band h2.media-cta-title { font-size: clamp(24px, 2.4vw, 32px); letter-spacing: -0.04em; line-height: 1.15; }
 .media-feed { display: grid; gap: 22px; margin: 0 auto; max-width: 680px; }
