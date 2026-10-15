@@ -1,5 +1,5 @@
+import MemberRowActions from "@/components/member-row-actions";
 import VolunteerAdminLayoutShell from "@/components/volunteer-admin-shell";
-import { adminDeleteAccountAction } from "@/lib/actions";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
@@ -82,6 +82,19 @@ export default async function AdminMembersPage({
             <div className="admin-post-list">
               {users.map((user) => {
                 const canDelete = user.role === "CONTRIBUTOR";
+                if (canDelete) {
+                  return (
+                    <MemberRowActions
+                      key={user.id}
+                      userId={user.id}
+                      name={user.name}
+                      email={user.email}
+                      roleLabel={roleLabel(user.role)}
+                      postCount={user._count.posts}
+                      commentCount={user._count.comments}
+                    />
+                  );
+                }
                 return (
                   <div className="admin-post-item border-item" key={user.id}>
                     <div>
@@ -92,20 +105,7 @@ export default async function AdminMembersPage({
                       </small>
                     </div>
                     <div className="admin-action-row">
-                      {canDelete ? (
-                        <form action={adminDeleteAccountAction} className="profile-danger-confirm">
-                          <input type="hidden" name="id" value={user.id} />
-                          <label>
-                            <input type="checkbox" name="confirm" value="1" required />
-                            Confirm
-                          </label>
-                          <button type="submit" className="delete-button" aria-label={`Delete ${user.name}`}>
-                            Delete account
-                          </button>
-                        </form>
-                      ) : (
-                        <span className="muted">Protected account</span>
-                      )}
+                      <span className="muted">Protected account</span>
                     </div>
                   </div>
                 );

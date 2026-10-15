@@ -201,6 +201,9 @@ td small, .admin-event-row small, .post-review small, .admin-post-item small, .v
 .admin-post-item strong { font-size: 13px; display: block; }
 .admin-post-item small { color: #6e8799; display: block; font-family: 'DM Mono', monospace; font-size: 8px; margin-top: 5px; text-transform: uppercase; }
 .border-item { border-top: 1px dashed #d3e2ed; }
+.member-row { border-radius: 10px; cursor: pointer; padding-left: 10px; padding-right: 10px; transition: background 0.2s ease; }
+.member-row:hover { background: rgba(10, 123, 179, 0.04); }
+.member-row:focus-visible { outline: 2px solid rgba(10, 123, 179, 0.35); outline-offset: 2px; }
 .status-pill { border-radius: 20px; font-family: 'DM Mono', monospace; font-size: 8px; padding: 5px 10px; text-transform: uppercase; }
 .status-approved { background: #e1f6ef; color: #219b79; }
 .status-pending { background: #fdf1dc; color: #c8811f; }
