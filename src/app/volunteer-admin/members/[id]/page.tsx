@@ -79,10 +79,6 @@ export default async function AdminMemberDetailPage({
             <dd>{roleLabel(user.role)}</dd>
           </div>
           <div>
-            <dt>Email verified</dt>
-            <dd>{user.emailVerified ? "Yes" : "No"}</dd>
-          </div>
-          <div>
             <dt>Joined</dt>
             <dd>{joined}</dd>
           </div>
