@@ -49,7 +49,7 @@ export default async function MediaPage() {
 
       <section className="band band-grape">
         <div className="content-width" style={{ textAlign: "center" }}>
-          <h2 style={{ margin: "0 auto 16px", maxWidth: 700 }}>
+          <h2 className="media-cta-title" style={{ margin: "0 auto 16px", maxWidth: 700 }}>
             Want to be in the <em>next photos?</em>
           </h2>
           <p style={{ margin: "0 auto 28px" }}>

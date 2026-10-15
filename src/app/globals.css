@@ -158,6 +158,7 @@ td small, .admin-event-row small, .post-review small, .admin-post-item small, .v
 .media-card figcaption p { color: #23415e; font-size: 14px; line-height: 1.7; margin: 10px 0 6px; }
 .media-card figcaption small { color: #6e8799; font-family: 'DM Mono', monospace; font-size: 8px; text-transform: uppercase; }
 .media-badge { background: var(--coral); border-radius: 20px; color: white; display: inline-block; font-family: 'DM Mono', monospace; font-size: 8px; padding: 4px 9px; text-transform: uppercase; }
+.band h2.media-cta-title { font-size: clamp(24px, 2.4vw, 32px); letter-spacing: -0.04em; line-height: 1.15; }
 .media-feed { display: grid; gap: 22px; margin: 0 auto; max-width: 680px; }
 .media-post { margin: 0; }
 .media-collage { display: grid; gap: 3px; overflow: hidden; }
