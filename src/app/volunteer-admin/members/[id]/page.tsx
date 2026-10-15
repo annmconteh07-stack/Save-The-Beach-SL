@@ -113,7 +113,7 @@ export default async function AdminMemberDetailPage({
       </section>
 
       <Link className="line-link" href="/volunteer-admin/members">
-        Back to members <span>→</span>
+        Back to members
       </Link>
     </VolunteerAdminLayoutShell>
   );
