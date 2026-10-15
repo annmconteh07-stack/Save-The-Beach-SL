@@ -64,13 +64,13 @@ export default function MediaGallery({ mediaItems }: { mediaItems: MediaItem[] }
               {item.type === "VIDEO" ? (
                 <video src={item.url} controls playsInline className="media-visual" preload="metadata" />
               ) : (
-                <img src={item.url} alt={item.caption} className="media-visual" loading="lazy" />
+                <img src={item.url} alt={item.caption || "Gallery media"} className="media-visual" loading="lazy" />
               )}
               <figcaption>
                 <span className={`pill ${pills[index % pills.length]}`} style={{ marginBottom: 12 }}>
                   {item.type === "VIDEO" ? "Video" : "Photo"}
                 </span>
-                <p>{item.caption}</p>
+                {item.caption ? <p>{item.caption}</p> : null}
                 <small>
                   {new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric" }).format(
                     item.createdAt,

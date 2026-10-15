@@ -55,10 +55,24 @@ function allowedExtension(ext: string) {
   return IMAGE_EXT.test(ext) || VIDEO_EXT.test(ext);
 }
 
+let bucketEnsured = false;
+
+async function ensurePublicBucket() {
+  if (!supabase || bucketEnsured) {
+    return;
+  }
+  bucketEnsured = true;
+  const { data } = await supabase.storage.getBucket(storageBucket).catch(() => ({ data: null }));
+  if (data && !data.public) {
+    await supabase.storage.updateBucket(storageBucket, { public: true }).catch(() => undefined);
+  }
+}
+
 async function saveToSupabase(file: File, name: string): Promise<string> {
   if (!supabase) {
     throw new Error("Supabase storage is not configured.");
   }
+  await ensurePublicBucket();
   const bytes = Buffer.from(await file.arrayBuffer());
   const { error } = await supabase.storage.from(storageBucket).upload(name, bytes, {
     contentType: file.type || "application/octet-stream",

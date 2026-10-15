@@ -12,14 +12,12 @@ export default async function MediaAdminPage({
 }) {
   const params = (await searchParams) ?? {};
   const notice = typeof params.added === "string"
-    ? "Media item added to the gallery."
+    ? "Added to the gallery."
     : typeof params.deleted === "string"
       ? "Media item removed."
       : null;
   const error = typeof params.error === "string"
-    ? params.error === "invalid-file"
-      ? "That file or URL could not be used. Use a photo or video in a supported format (JPG, PNG, WebP, GIF, AVIF, MP4, WebM, MOV) under the size limits, or paste a direct media link."
-      : "Please add a caption and then choose a file or paste a photo/video URL."
+    ? "That file or link could not be posted. Choose a photo or video in a supported format (JPG, PNG, WebP, GIF, AVIF, MP4, WebM, MOV) under the size limits, or paste a direct media link."
     : null;
 
   const mediaItems = await prisma.media.findMany({
@@ -48,7 +46,7 @@ export default async function MediaAdminPage({
             </div>
           </div>
           <p className="form-message">
-            Upload a photo or video from your device, or paste a link — both go straight to the media page.
+            Add one or many photos or videos, with an optional caption. They go straight to the media page.
           </p>
           <MediaForm />
         </section>
@@ -70,11 +68,11 @@ export default async function MediaAdminPage({
                     {item.type === "VIDEO" ? (
                       <span className="media-badge">Video</span>
                     ) : (
-                      <img src={item.url} alt={item.caption} />
+                      <img src={item.url} alt={item.caption || "Gallery media"} />
                     )}
                   </div>
                   <div>
-                    <strong>{item.caption}</strong>
+                    <strong>{item.caption || "No caption"}</strong>
                     <small>
                       {item.type.toLowerCase()}
                       {item.category ? ` · ${item.category === "COMMUNITY_DAY" ? "Community day" : "Clean-up"}` : ""} ·{" "}

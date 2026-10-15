@@ -76,13 +76,6 @@ const eventSchema = z.object({
   capacityLimit: z.coerce.number().int().min(0),
 });
 
-const mediaSchema = z.object({
-  caption: z.string().trim().min(1, "Add a short caption."),
-  url: z.string().trim().url("Please enter a valid image or video URL."),
-  type: z.enum(["PHOTO", "VIDEO"]),
-  category: z.enum(["", "CLEANUP", "COMMUNITY_DAY"]).transform((value) => (value === "" ? null : value)),
-});
-
 const statsSchema = z.object({
   bagsCollected: z.string().trim().max(40),
   beachesCovered: z.string().trim().max(40),
@@ -605,56 +598,47 @@ export async function deleteEventAction(formData: FormData) {
 export async function addMediaAction(formData: FormData) {
   await requireMediaAdmin();
 
-  const caption = String(formData.get("caption") ?? "").trim();
-  const fileEntry = formData.get("file");
-  const mediaFile = fileEntry instanceof File ? fileEntry : null;
+  const caption = String(formData.get("caption") ?? "").trim().slice(0, 400);
+  const rawCategory = String(formData.get("category") ?? "").trim();
+  const category = rawCategory === "CLEANUP" || rawCategory === "COMMUNITY_DAY" ? rawCategory : null;
 
-  if (caption.length < 1) {
-    redirect("/media-admin?error=caption");
+  const files = formData
+    .getAll("files")
+    .filter((entry): entry is File => entry instanceof File && entry.size > 0);
+  const url = String(formData.get("url") ?? "").trim();
+
+  if (files.length === 0 && !url) {
+    redirect("/media-admin?error=invalid-file");
   }
 
-  let mediaUrl = "";
-  let mediaType: "PHOTO" | "VIDEO" = "PHOTO";
-  const mediaCategory = String(formData.get("category") ?? "").trim() as "" | "CLEANUP" | "COMMUNITY_DAY";
+  const records: {
+    caption: string;
+    url: string;
+    type: "PHOTO" | "VIDEO";
+    category: "CLEANUP" | "COMMUNITY_DAY" | null;
+  }[] = [];
 
-  if (mediaFile) {
+  for (const file of files) {
     try {
-      const uploaded = await saveUpload(mediaFile);
-      mediaUrl = uploaded.url;
-      mediaType = uploaded.kind;
-    } catch {
-      redirect("/media-admin?error=invalid-file");
-    }
-  } else {
-    const url = String(formData.get("url") ?? "");
-    if (!url.trim()) {
-      redirect("/media-admin?error=invalid-file");
-    }
-    try {
-      const payload = mediaSchema.parse({
-        caption,
-        url,
-        type: String(formData.get("type") ?? "PHOTO") as "PHOTO" | "VIDEO",
-        category: mediaCategory,
-      });
-      mediaUrl = payload.url;
-      mediaType = payload.type;
+      const uploaded = await saveUpload(file);
+      records.push({ caption, url: uploaded.url, type: uploaded.kind, category });
     } catch {
       redirect("/media-admin?error=invalid-file");
     }
   }
 
-  await prisma.media.create({
-    data: {
-      caption,
-      url: mediaUrl,
-      type: mediaType,
-      category: mediaCategory === "" ? null : mediaCategory,
-    },
-  });
+  if (url) {
+    if (!/^https?:\/\/\S+$/i.test(url)) {
+      redirect("/media-admin?error=invalid-file");
+    }
+    const type: "PHOTO" | "VIDEO" = /\.(mp4|webm|ogv|ogg|mov|m4v)(\?\S*)?$/i.test(url) ? "VIDEO" : "PHOTO";
+    records.push({ caption, url, type, category });
+  }
+
+  await prisma.media.createMany({ data: records });
 
   revalidatePath("/media");
-  redirect("/media-admin?added=1");
+  redirect(`/media-admin?added=${records.length}`);
 }
 
 export async function deleteMediaAction(formData: FormData) {
