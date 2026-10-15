@@ -3,22 +3,10 @@ import Link from "next/link";
 import SiteFooter from "@/components/site-footer";
 import SiteHeader from "@/components/site-header";
 import { WaveDivider } from "@/components/waves";
-import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
-export default async function Home() {
-  const [events, mediaItems, siteStats] = await Promise.all([
-    prisma.event.count({ where: { date: { gte: new Date() } } }),
-    prisma.media.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 3,
-    }),
-    prisma.siteStat.findMany(),
-  ]);
-
-  const statByKey = new Map(siteStats.map((stat) => [stat.key, stat.value]));
-
+export default function Home() {
   return (
     <main className="blue-site">
       <SiteHeader />
@@ -43,7 +31,7 @@ export default async function Home() {
             <Link className="white-button" href="/volunteer">
               Become a volunteer
             </Link>
-            <Link className="hero-text-link" href="#mission">
+            <Link className="hero-text-link" href="/about">
               Discover our work
             </Link>
           </div>
@@ -75,104 +63,6 @@ export default async function Home() {
           <span>Stronger communities</span>
           <span>Salt in the air</span>
           <span>Hope in the future</span>
-        </div>
-      </section>
-
-      <WaveDivider fill="#eef9fd" top="#2ec8c0" />
-
-      <section className="intro-section" id="mission">
-        <div className="content-width">
-          <div className="section-kicker blue-kicker">
-            <span>01</span> Who we are
-          </div>
-          <div className="intro-grid">
-            <h2>
-              Our coast is
-              <br />
-              <em>our common ground.</em>
-            </h2>
-            <div className="intro-copy">
-              <p>
-                Save The Beach SL is a grass-roots, volunteer-driven organisation working along the beaches of Sierra
-                Leone. We clean the shoreline, educate communities about waste, and build a movement where every person
-                has a role to play.
-              </p>
-              <p>
-                Beaches are where our stories meet the sea. They feed us, bring us together, and remind us that what we
-                do here matters far beyond the shoreline.
-              </p>
-              <Link className="line-link" href="/about">
-                More about our story
-              </Link>
-            </div>
-          </div>
-          <div className="bento">
-            <div className="stat-tile stat-blue span-1">
-              <i>🧹</i>
-              <strong>{events}</strong>
-              <span>clean-ups planned</span>
-            </div>
-            <div className="stat-tile stat-sun span-1">
-              <i>🗑️</i>
-              <strong>{statByKey.get("bagsCollected") ?? ""}</strong>
-              <span>bags collected</span>
-            </div>
-            <div className="stat-tile stat-pink span-1">
-              <i>🏖️</i>
-              <strong>{statByKey.get("beachesCovered") ?? ""}</strong>
-              <span>beaches covered</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <WaveDivider fill="#0a7bb3" top="#2ec8c0" />
-
-      <section className="gallery-strip" id="gallery">
-        <div className="content-width">
-          <div className="section-heading">
-            <div>
-              <div className="section-kicker white-kicker">
-                <span>02</span> Media
-              </div>
-              <h2>
-                The shoreline
-                <br />
-                <em>in pictures.</em>
-              </h2>
-            </div>
-            <Link className="outline-button" href="/media">
-              Open the gallery
-            </Link>
-          </div>
-          <div className="gallery-strip-grid">
-            {mediaItems.map((item) => (
-              <div className="gallery-tile" key={item.id}>
-                {item.type === "VIDEO" ? (
-                  <video src={item.url} muted controls playsInline className="gallery-tile-media" />
-                ) : (
-                  <img src={item.url} alt={item.caption} className="gallery-tile-media" />
-                )}
-                <span>{item.caption}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <WaveDivider fill="#ff7f66" top="#ffd166" />
-
-      <section className="signup-section" id="register">
-        <div className="signup-inner">
-          <p className="eyebrow blue-eyebrow">Your next Saturday could look like this</p>
-          <h2>
-            Show up for
-            <br />
-            <em>the shore.</em>
-          </h2>
-          <Link className="blue-button" href="/volunteer">
-            Join the volunteers
-          </Link>
         </div>
       </section>
 
