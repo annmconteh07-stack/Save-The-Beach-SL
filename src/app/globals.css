@@ -204,7 +204,10 @@ td small, .admin-event-row small, .post-review small, .admin-post-item small, .v
 .member-row { border-radius: 10px; color: inherit; cursor: pointer; padding: 16px 10px; text-decoration: none; transition: background 0.2s ease; }
 .member-row strong { font-size: 16px; font-weight: 800; letter-spacing: -0.01em; }
 .member-row-hint { color: var(--blue); font-family: 'DM Mono', monospace; font-size: 8px; text-transform: uppercase; }
-.member-delete-form { align-items: center; display: flex; gap: 12px; margin-top: 16px; }
+.member-delete-form { margin-top: 16px; }
+.member-delete-warning { color: #a83228; font-size: 14px; line-height: 1.7; margin: 0; }
+.member-delete-actions { align-items: center; display: flex; gap: 10px; margin-top: 14px; }
+.member-delete-actions .read-button { cursor: pointer; font-size: 9px; padding: 10px 14px; }
 .admin-detail-grid { display: grid; gap: 14px 28px; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 4px 0 0; }
 .admin-detail-grid > div { border-top: 1px solid #e0edf4; padding-top: 13px; }
 .admin-detail-grid dt { color: #6e8799; font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase; }
