@@ -158,6 +158,30 @@ td small, .admin-event-row small, .post-review small, .admin-post-item small, .v
 .media-card figcaption p { color: #23415e; font-size: 14px; line-height: 1.7; margin: 10px 0 6px; }
 .media-card figcaption small { color: #6e8799; font-family: 'DM Mono', monospace; font-size: 8px; text-transform: uppercase; }
 .media-badge { background: var(--coral); border-radius: 20px; color: white; display: inline-block; font-family: 'DM Mono', monospace; font-size: 8px; padding: 4px 9px; text-transform: uppercase; }
+.media-feed { display: grid; gap: 22px; margin: 0 auto; max-width: 680px; }
+.media-post { margin: 0; }
+.media-collage { display: grid; gap: 3px; overflow: hidden; }
+.media-collage-1 { grid-template-columns: 1fr; }
+.media-collage-1 .media-tile { aspect-ratio: 4 / 3; }
+.media-collage-2 { grid-template-columns: 1fr 1fr; }
+.media-collage-2 .media-tile { aspect-ratio: 1 / 1; }
+.media-collage-3, .media-collage-4 { aspect-ratio: 4 / 3; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+.media-collage-3 .media-tile:first-child { grid-row: span 2; }
+.media-tile { background: #dff1fb; border: 0; cursor: pointer; overflow: hidden; padding: 0; position: relative; }
+.media-tile img, .media-tile video { display: block; height: 100%; object-fit: cover; width: 100%; }
+.media-tile-more { align-items: center; background: rgba(6, 43, 89, 0.58); color: white; display: flex; font-size: 30px; font-weight: 600; inset: 0; justify-content: center; position: absolute; }
+.media-tile-play { align-items: center; background: rgba(6, 43, 89, 0.55); border-radius: 50%; bottom: 10px; color: white; display: flex; font-size: 12px; height: 30px; justify-content: center; left: 10px; position: absolute; width: 30px; }
+.media-lightbox { align-items: center; background: rgba(4, 20, 34, 0.94); display: flex; inset: 0; justify-content: center; padding: 26px; position: fixed; z-index: 90; }
+.media-lightbox-figure { margin: 0; max-width: 1000px; width: 100%; }
+.media-lightbox-figure img, .media-lightbox-figure video { border-radius: 12px; display: block; margin: 0 auto; max-height: 80vh; max-width: 100%; object-fit: contain; }
+.media-lightbox-caption { color: #dbe9f4; font-size: 14px; line-height: 1.7; margin: 16px auto 0; max-width: 720px; text-align: center; }
+.media-lightbox-counter { color: #a9cce5; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.08em; margin: 8px 0 0; text-align: center; text-transform: uppercase; }
+.media-lightbox-close { background: rgba(255, 255, 255, 0.14); border: 0; border-radius: 50%; color: white; cursor: pointer; font-size: 22px; height: 44px; line-height: 1; position: absolute; right: 22px; top: 22px; width: 44px; }
+.media-lightbox-close:hover { background: rgba(255, 255, 255, 0.26); }
+.media-lightbox-nav { align-items: center; background: rgba(255, 255, 255, 0.14); border: 0; border-radius: 50%; color: white; cursor: pointer; display: flex; font-size: 30px; height: 52px; justify-content: center; line-height: 1; position: absolute; top: 50%; transform: translateY(-50%); width: 52px; }
+.media-lightbox-nav:hover { background: rgba(255, 255, 255, 0.26); }
+.media-lightbox-prev { left: 22px; }
+.media-lightbox-next { right: 22px; }
 
 /* Home gallery strip */
 .gallery-strip { background: var(--blue); color: white; padding: 100px 0 110px; }

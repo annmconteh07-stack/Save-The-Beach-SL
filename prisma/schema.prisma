@@ -112,7 +112,11 @@ model Media {
   url       String
   type      MediaType      @default(PHOTO)
   category  MediaCategory?
+  albumId   String?
+  position  Int            @default(0)
   createdAt DateTime       @default(now())
+
+  @@index([albumId])
 }
 
 model SiteStat {

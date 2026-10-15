@@ -1,6 +1,6 @@
 "use server";
 
-import { randomInt } from "node:crypto";
+import { randomInt, randomUUID } from "node:crypto";
 
 import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
@@ -635,7 +635,10 @@ export async function addMediaAction(formData: FormData) {
     records.push({ caption, url, type, category });
   }
 
-  await prisma.media.createMany({ data: records });
+  const albumId = records.length > 1 ? randomUUID() : null;
+  await prisma.media.createMany({
+    data: records.map((record, index) => ({ ...record, albumId, position: index })),
+  });
 
   revalidatePath("/media");
   redirect(`/media-admin?added=${records.length}`);

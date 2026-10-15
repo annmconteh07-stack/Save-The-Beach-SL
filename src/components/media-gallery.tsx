@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type MediaItem = {
   id: string;
@@ -8,8 +8,12 @@ type MediaItem = {
   url: string;
   type: "PHOTO" | "VIDEO";
   category: "CLEANUP" | "COMMUNITY_DAY" | null;
+  albumId: string | null;
+  position: number;
   createdAt: Date;
 };
+
+type MediaGroup = { id: string; items: MediaItem[] };
 
 const accents = ["var(--blue)", "var(--teal)", "var(--coral)", "var(--sun)", "var(--grape)", "var(--pink)"];
 const pills = ["pill-blue", "pill-teal", "pill-pink", "pill-sun", "pill-grape", "pill-aqua"];
@@ -24,14 +28,109 @@ const filters = [
 
 type FilterKey = (typeof filters)[number]["key"];
 
+function groupMedia(items: MediaItem[]): MediaGroup[] {
+  const groups: MediaGroup[] = [];
+  const byAlbum = new Map<string, MediaGroup>();
+
+  for (const item of items) {
+    if (item.albumId) {
+      let group = byAlbum.get(item.albumId);
+      if (!group) {
+        group = { id: item.albumId, items: [] };
+        byAlbum.set(item.albumId, group);
+        groups.push(group);
+      }
+      group.items.push(item);
+    } else {
+      groups.push({ id: item.id, items: [item] });
+    }
+  }
+
+  return groups.map((group) => ({
+    ...group,
+    items: [...group.items].sort((a, b) => a.position - b.position),
+  }));
+}
+
+function groupLabel(group: MediaGroup) {
+  const count = group.items.length;
+  if (count === 1) {
+    return group.items[0].type === "VIDEO" ? "Video" : "Photo";
+  }
+  const videos = group.items.filter((item) => item.type === "VIDEO").length;
+  const photos = count - videos;
+  if (videos === 0) return `${count} photos`;
+  if (photos === 0) return `${count} videos`;
+  return `${count} items`;
+}
+
+function MediaVisual({ item }: { item: MediaItem }) {
+  if (item.type === "VIDEO") {
+    return (
+      <>
+        <video src={item.url} muted playsInline preload="metadata" />
+        <span className="media-tile-play" aria-hidden="true">
+          ▶
+        </span>
+      </>
+    );
+  }
+  return <img src={item.url} alt={item.caption || "Gallery media"} loading="lazy" />;
+}
+
+function Collage({ items, onOpen }: { items: MediaItem[]; onOpen: (index: number) => void }) {
+  const shown = items.slice(0, 4);
+  const extra = items.length - shown.length;
+
+  return (
+    <div className={`media-collage media-collage-${Math.min(items.length, 4)}`}>
+      {shown.map((item, index) => (
+        <button
+          type="button"
+          className="media-tile"
+          key={item.id}
+          onClick={() => onOpen(index)}
+          aria-label={`Open ${item.type === "VIDEO" ? "video" : "photo"} ${index + 1} of ${items.length}`}
+        >
+          <MediaVisual item={item} />
+          {index === shown.length - 1 && extra > 0 ? <span className="media-tile-more">+{extra}</span> : null}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export default function MediaGallery({ mediaItems }: { mediaItems: MediaItem[] }) {
   const [active, setActive] = useState<FilterKey>("ALL");
+  const [lightbox, setLightbox] = useState<{ items: MediaItem[]; index: number } | null>(null);
 
-  const visibleItems = mediaItems.filter((item) => {
+  useEffect(() => {
+    if (!lightbox) {
+      return;
+    }
+    function onKey(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setLightbox(null);
+      } else if (event.key === "ArrowRight") {
+        setLightbox((prev) => (prev ? { ...prev, index: (prev.index + 1) % prev.items.length } : prev));
+      } else if (event.key === "ArrowLeft") {
+        setLightbox((prev) =>
+          prev ? { ...prev, index: (prev.index - 1 + prev.items.length) % prev.items.length } : prev,
+        );
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [lightbox]);
+
+  const groups = groupMedia(mediaItems);
+  const visibleGroups = groups.filter((group) => {
     if (active === "ALL") return true;
-    if (active === "PHOTO" || active === "VIDEO") return item.type === active;
-    return item.category === active;
+    if (active === "PHOTO" || active === "VIDEO") return group.items.some((item) => item.type === active);
+    return group.items.some((item) => item.category === active);
   });
+
+  const current = lightbox ? lightbox.items[lightbox.index] : null;
 
   return (
     <>
@@ -49,38 +148,84 @@ export default function MediaGallery({ mediaItems }: { mediaItems: MediaItem[] }
         ))}
       </div>
 
-      {visibleItems.length === 0 && mediaItems.length === 0 ? (
+      {visibleGroups.length === 0 && mediaItems.length === 0 ? (
         <p className="empty-state">No media posted yet. Check back after the next clean-up.</p>
-      ) : visibleItems.length === 0 ? (
+      ) : visibleGroups.length === 0 ? (
         <></>
       ) : (
-        <div className="media-masonry">
-          {visibleItems.map((item, index) => (
-            <figure
-              className="media-card"
-              key={item.id}
-              style={{ borderTop: `6px solid ${accents[index % accents.length]}` }}
-            >
-              {item.type === "VIDEO" ? (
-                <video src={item.url} controls playsInline className="media-visual" preload="metadata" />
-              ) : (
-                <img src={item.url} alt={item.caption || "Gallery media"} className="media-visual" loading="lazy" />
-              )}
-              <figcaption>
-                <span className={`pill ${pills[index % pills.length]}`} style={{ marginBottom: 12 }}>
-                  {item.type === "VIDEO" ? "Video" : "Photo"}
-                </span>
-                {item.caption ? <p>{item.caption}</p> : null}
-                <small>
-                  {new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric" }).format(
-                    item.createdAt,
-                  )}
-                </small>
-              </figcaption>
-            </figure>
-          ))}
+        <div className="media-feed">
+          {visibleGroups.map((group, index) => {
+            const lead = group.items[0];
+            return (
+              <figure
+                className="media-card media-post"
+                key={group.id}
+                style={{ borderTop: `6px solid ${accents[index % accents.length]}` }}
+              >
+                <Collage items={group.items} onOpen={(position) => setLightbox({ items: group.items, index: position })} />
+                <figcaption>
+                  <span className={`pill ${pills[index % pills.length]}`} style={{ marginBottom: 12 }}>
+                    {groupLabel(group)}
+                  </span>
+                  {lead.caption ? <p>{lead.caption}</p> : null}
+                  <small>
+                    {new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric" }).format(
+                      lead.createdAt,
+                    )}
+                  </small>
+                </figcaption>
+              </figure>
+            );
+          })}
         </div>
       )}
+
+      {lightbox && current ? (
+        <div className="media-lightbox" role="dialog" aria-modal="true" onClick={() => setLightbox(null)}>
+          <button type="button" className="media-lightbox-close" onClick={() => setLightbox(null)} aria-label="Close">
+            ×
+          </button>
+          {lightbox.items.length > 1 ? (
+            <>
+              <button
+                type="button"
+                className="media-lightbox-nav media-lightbox-prev"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setLightbox((prev) =>
+                    prev ? { ...prev, index: (prev.index - 1 + prev.items.length) % prev.items.length } : prev,
+                  );
+                }}
+                aria-label="Previous"
+              >
+                ‹
+              </button>
+              <button
+                type="button"
+                className="media-lightbox-nav media-lightbox-next"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setLightbox((prev) => (prev ? { ...prev, index: (prev.index + 1) % prev.items.length } : prev));
+                }}
+                aria-label="Next"
+              >
+                ›
+              </button>
+            </>
+          ) : null}
+          <figure className="media-lightbox-figure" onClick={(event) => event.stopPropagation()}>
+            {current.type === "VIDEO" ? (
+              <video src={current.url} controls autoPlay playsInline />
+            ) : (
+              <img src={current.url} alt={current.caption || "Gallery media"} />
+            )}
+            {current.caption ? <figcaption className="media-lightbox-caption">{current.caption}</figcaption> : null}
+            <p className="media-lightbox-counter">
+              {lightbox.index + 1} / {lightbox.items.length}
+            </p>
+          </figure>
+        </div>
+      ) : null}
     </>
   );
 }
