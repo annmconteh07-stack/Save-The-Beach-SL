@@ -16,7 +16,6 @@ type MediaItem = {
 type MediaGroup = { id: string; items: MediaItem[] };
 
 const accents = ["var(--blue)", "var(--teal)", "var(--coral)", "var(--sun)", "var(--grape)", "var(--pink)"];
-const pills = ["pill-blue", "pill-teal", "pill-pink", "pill-sun", "pill-grape", "pill-aqua"];
 
 const filters = [
   { key: "ALL", label: "All moments", className: "pill-outline" },
@@ -52,18 +51,6 @@ function groupMedia(items: MediaItem[]): MediaGroup[] {
   }));
 }
 
-function groupLabel(group: MediaGroup) {
-  const count = group.items.length;
-  if (count === 1) {
-    return group.items[0].type === "VIDEO" ? "Video" : "Photo";
-  }
-  const videos = group.items.filter((item) => item.type === "VIDEO").length;
-  const photos = count - videos;
-  if (videos === 0) return `${count} photos`;
-  if (photos === 0) return `${count} videos`;
-  return `${count} items`;
-}
-
 function MediaVisual({ item }: { item: MediaItem }) {
   if (item.type === "VIDEO") {
     return (
@@ -79,11 +66,11 @@ function MediaVisual({ item }: { item: MediaItem }) {
 }
 
 function Collage({ items, onOpen }: { items: MediaItem[]; onOpen: (index: number) => void }) {
-  const shown = items.slice(0, 4);
+  const shown = items.slice(0, 3);
   const extra = items.length - shown.length;
 
   return (
-    <div className={`media-collage media-collage-${Math.min(items.length, 4)}`}>
+    <div className={`media-collage media-collage-${Math.min(items.length, 3)}`}>
       {shown.map((item, index) => (
         <button
           type="button"
@@ -164,9 +151,6 @@ export default function MediaGallery({ mediaItems }: { mediaItems: MediaItem[] }
               >
                 <Collage items={group.items} onOpen={(position) => setLightbox({ items: group.items, index: position })} />
                 <figcaption>
-                  <span className={`pill ${pills[index % pills.length]}`} style={{ marginBottom: 12 }}>
-                    {groupLabel(group)}
-                  </span>
                   {lead.caption ? <p>{lead.caption}</p> : null}
                   <small>
                     {new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric" }).format(
