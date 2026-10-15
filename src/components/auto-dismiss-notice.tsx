@@ -9,10 +9,12 @@ export default function AutoDismissNotice({
   message,
   clearQuery = [],
   variant = "success",
+  toast = false,
 }: {
   message: string;
   clearQuery?: string[];
   variant?: "success" | "danger";
+  toast?: boolean;
 }) {
   const [leaving, setLeaving] = useState(false);
   const [hidden, setHidden] = useState(false);
@@ -43,10 +45,10 @@ export default function AutoDismissNotice({
 
   if (hidden) return null;
 
-  const classes =
-    variant === "danger"
-      ? `notice notice-danger admin-notice auto-dismiss-notice${leaving ? " is-leaving" : ""}`
-      : `success-panel admin-notice auto-dismiss-notice${leaving ? " is-leaving" : ""}`;
+  const base = variant === "danger" ? "notice notice-danger" : "success-panel";
+  const classes = toast
+    ? `${base} admin-toast${leaving ? " is-leaving" : ""}`
+    : `${base} admin-notice auto-dismiss-notice${leaving ? " is-leaving" : ""}`;
 
   return (
     <div className={classes} role="status">

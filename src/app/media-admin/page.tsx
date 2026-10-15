@@ -1,3 +1,4 @@
+import AutoDismissNotice from "@/components/auto-dismiss-notice";
 import MediaAdminLayoutShell from "@/components/media-admin-shell";
 import MediaForm from "@/components/media-form";
 import { deleteMediaAction } from "@/lib/actions";
@@ -11,11 +12,8 @@ export default async function MediaAdminPage({
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const params = (await searchParams) ?? {};
-  const notice = typeof params.added === "string"
-    ? "Added to the gallery."
-    : typeof params.deleted === "string"
-      ? "Media item removed."
-      : null;
+  const noticeKey = typeof params.added === "string" ? "added" : typeof params.deleted === "string" ? "deleted" : null;
+  const notice = noticeKey === "added" ? "Added to the gallery." : noticeKey === "deleted" ? "Media item removed." : null;
   const error = typeof params.error === "string"
     ? "That file or link could not be posted. Choose a photo or video in a supported format (JPG, PNG, WebP, GIF, AVIF, MP4, WebM, MOV) under the size limits, or paste a direct media link."
     : null;
@@ -26,11 +24,7 @@ export default async function MediaAdminPage({
 
   return (
     <MediaAdminLayoutShell title="Media" description="Post photos and videos taken during clean-ups.">
-      {notice ? (
-        <div className="success-panel admin-notice">
-          <p>{notice}</p>
-        </div>
-      ) : null}
+      {notice && noticeKey ? <AutoDismissNotice message={notice} clearQuery={[noticeKey]} toast /> : null}
       {error ? (
         <div className="notice notice-danger admin-notice">
           <p>{error}</p>
