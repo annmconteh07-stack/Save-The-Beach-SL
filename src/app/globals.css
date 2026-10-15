@@ -201,7 +201,14 @@ td small, .admin-event-row small, .post-review small, .admin-post-item small, .v
 .admin-post-item strong { font-size: 13px; display: block; }
 .admin-post-item small { color: #6e8799; display: block; font-family: 'DM Mono', monospace; font-size: 8px; margin-top: 5px; text-transform: uppercase; }
 .border-item { border-top: 1px dashed #d3e2ed; }
-.member-row { border-radius: 10px; cursor: pointer; padding-left: 10px; padding-right: 10px; transition: background 0.2s ease; }
+.member-row { border-radius: 10px; color: inherit; cursor: pointer; padding: 16px 10px; text-decoration: none; transition: background 0.2s ease; }
+.member-row strong { font-size: 16px; font-weight: 800; letter-spacing: -0.01em; }
+.member-row-hint { color: var(--blue); font-family: 'DM Mono', monospace; font-size: 8px; text-transform: uppercase; }
+.member-delete-form { align-items: center; display: flex; gap: 12px; margin-top: 16px; }
+.admin-detail-grid { display: grid; gap: 14px 28px; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 4px 0 0; }
+.admin-detail-grid > div { border-top: 1px solid #e0edf4; padding-top: 13px; }
+.admin-detail-grid dt { color: #6e8799; font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase; }
+.admin-detail-grid dd { color: var(--navy); font-size: 16px; margin: 6px 0 0; }
 .member-row:hover { background: rgba(10, 123, 179, 0.04); }
 .member-row:focus-visible { outline: 2px solid rgba(10, 123, 179, 0.35); outline-offset: 2px; }
 .status-pill { border-radius: 20px; font-family: 'DM Mono', monospace; font-size: 8px; padding: 5px 10px; text-transform: uppercase; }

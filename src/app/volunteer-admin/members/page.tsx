@@ -1,4 +1,5 @@
-import MemberRowActions from "@/components/member-row-actions";
+import Link from "next/link";
+
 import VolunteerAdminLayoutShell from "@/components/volunteer-admin-shell";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
@@ -82,21 +83,8 @@ export default async function AdminMembersPage({
             <div className="admin-post-list">
               {users.map((user) => {
                 const canDelete = user.role === "CONTRIBUTOR";
-                if (canDelete) {
-                  return (
-                    <MemberRowActions
-                      key={user.id}
-                      userId={user.id}
-                      name={user.name}
-                      email={user.email}
-                      roleLabel={roleLabel(user.role)}
-                      postCount={user._count.posts}
-                      commentCount={user._count.comments}
-                    />
-                  );
-                }
                 return (
-                  <div className="admin-post-item border-item" key={user.id}>
+                  <Link className="admin-post-item border-item member-row" key={user.id} href={`/volunteer-admin/members/${user.id}`}>
                     <div>
                       <strong>{user.name}</strong>
                       <small>
@@ -105,9 +93,13 @@ export default async function AdminMembersPage({
                       </small>
                     </div>
                     <div className="admin-action-row">
-                      <span className="muted">Protected account</span>
+                      {canDelete ? (
+                        <span className="member-row-hint">Manage account</span>
+                      ) : (
+                        <span className="muted">Protected account</span>
+                      )}
                     </div>
-                  </div>
+                  </Link>
                 );
               })}
             </div>
