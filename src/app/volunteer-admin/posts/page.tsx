@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import AutoDismissNotice from "@/components/auto-dismiss-notice";
 import VolunteerAdminLayoutShell from "@/components/volunteer-admin-shell";
 import { approvePostAction, deletePostAction, rejectPostAction } from "@/lib/actions";
 import { prisma } from "@/lib/db";
@@ -12,13 +13,22 @@ export default async function VolunteerAdminPostsPage({
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const params = (await searchParams) ?? {};
-  const notice = typeof params.approved === "string"
-    ? "Post approved and published to the blog."
-    : typeof params.rejected === "string"
-      ? "Post rejected."
-      : typeof params.deleted === "string"
-        ? "Post deleted."
-        : null;
+  const noticeKey =
+    typeof params.approved === "string"
+      ? "approved"
+      : typeof params.rejected === "string"
+        ? "rejected"
+        : typeof params.deleted === "string"
+          ? "deleted"
+          : null;
+  const notice =
+    noticeKey === "approved"
+      ? "Post approved and published to the blog."
+      : noticeKey === "rejected"
+        ? "Post rejected."
+        : noticeKey === "deleted"
+          ? "Post deleted."
+          : null;
 
   const pendingPosts = await prisma.post.findMany({
     where: { status: "PENDING" },
@@ -34,11 +44,7 @@ export default async function VolunteerAdminPostsPage({
 
   return (
     <VolunteerAdminLayoutShell title="Blog" description="Moderate stories and manage everything published on the journal.">
-      {notice ? (
-        <div className="success-panel admin-notice">
-          <p>{notice}</p>
-        </div>
-      ) : null}
+      {notice && noticeKey ? <AutoDismissNotice message={notice} clearQuery={[noticeKey]} /> : null}
 
       <section className="admin-panel">
         <div className="panel-heading">

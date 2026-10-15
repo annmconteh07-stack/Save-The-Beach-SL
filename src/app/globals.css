@@ -211,6 +211,8 @@ td small, .admin-event-row small, .post-review small, .admin-post-item small, .v
 .volunteer-item strong { display: block; font-size: 12px; }
 .volunteer-item small { color: #6e8799; display: block; font-family: 'DM Mono', monospace; font-size: 8px; margin-top: 4px; text-transform: uppercase; }
 .admin-notice p { margin: 0; }
+.auto-dismiss-notice { max-height: 260px; overflow: hidden; transition: opacity 0.35s ease, transform 0.35s ease, max-height 0.4s ease-in, margin 0.4s ease-in, padding 0.4s ease-in, border-width 0.4s ease-in; }
+.auto-dismiss-notice.is-leaving { border-bottom-width: 0; border-top-width: 0; margin: 0; max-height: 0; opacity: 0; padding-bottom: 0; padding-top: 0; transform: translateY(-6px); }
 
 @media (max-width: 900px) {
   .media-masonry { columns: 2; }
