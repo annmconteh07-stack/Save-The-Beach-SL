@@ -161,8 +161,12 @@ td small, .admin-event-row small, .post-review small, .admin-post-item small, .v
 .media-comment-list { display: grid; gap: 12px; margin-bottom: 14px; }
 .media-comment { align-items: flex-start; display: flex; gap: 10px; }
 .media-comment-avatar { align-items: center; background: var(--teal); border-radius: 50%; color: white; display: flex; flex: 0 0 32px; font-family: 'DM Mono', monospace; font-size: 11px; height: 32px; justify-content: center; text-transform: uppercase; width: 32px; }
+.media-card .media-comment-body { flex: 1; }
 .media-card .media-comment-body strong { color: #0a3852; display: block; font-size: 13px; }
 .media-card .media-comment-body p { color: #3a5a72; font-size: 14px; line-height: 1.6; margin: 2px 0 0; white-space: pre-wrap; }
+.media-comment-delete-form { margin: 0; }
+.media-comment-delete { background: none; border: 0; color: #96a9b8; cursor: pointer; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.04em; padding: 0; text-transform: uppercase; }
+.media-comment-delete:hover { color: var(--coral); }
 .media-comment-form { align-items: flex-end; display: flex; gap: 10px; }
 .media-comment-form textarea { border: 1px solid rgba(10, 56, 82, 0.16); border-radius: 12px; flex: 1; font: inherit; font-size: 14px; padding: 10px 12px; resize: vertical; }
 .media-comment-form textarea:focus { border-color: var(--blue); outline: none; }

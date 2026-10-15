@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-import { submitMediaCommentAction } from "@/lib/actions";
+import { deleteMediaCommentAction, submitMediaCommentAction } from "@/lib/actions";
 
 type MediaComment = {
   id: string;
   body: string;
   createdAt: Date;
+  canDelete: boolean;
   author: { name: string };
 };
 
@@ -198,6 +199,18 @@ export default function MediaGallery({
                               <strong>{comment.author.name}</strong>
                               <p>{comment.body}</p>
                             </div>
+                            {comment.canDelete ? (
+                              <form className="media-comment-delete-form" action={deleteMediaCommentAction}>
+                                <input type="hidden" name="commentId" value={comment.id} />
+                                <button
+                                  type="submit"
+                                  className="media-comment-delete"
+                                  aria-label={`Delete comment by ${comment.author.name}`}
+                                >
+                                  Delete
+                                </button>
+                              </form>
+                            ) : null}
                           </div>
                         ))}
                       </div>

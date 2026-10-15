@@ -3,14 +3,14 @@ import Link from "next/link";
 import SiteFooter from "@/components/site-footer";
 import SiteHeader from "@/components/site-header";
 import MediaGallery from "@/components/media-gallery";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, isMediaAdmin, isVolunteerAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
 export default async function MediaPage() {
   const currentUser = await getCurrentUser();
-  const mediaItems = await prisma.media.findMany({
+  const mediaRows = await prisma.media.findMany({
     orderBy: { createdAt: "desc" },
     include: {
       comments: {
@@ -19,6 +19,15 @@ export default async function MediaPage() {
       },
     },
   });
+
+  const isModerator = isMediaAdmin(currentUser) || isVolunteerAdmin(currentUser);
+  const mediaItems = mediaRows.map((item) => ({
+    ...item,
+    comments: item.comments.map((comment) => ({
+      ...comment,
+      canDelete: isModerator || comment.authorId === currentUser?.id,
+    })),
+  }));
 
   const photos = mediaItems.filter((item) => item.type === "PHOTO").length;
   const videos = mediaItems.filter((item) => item.type === "VIDEO").length;

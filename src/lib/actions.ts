@@ -601,6 +601,40 @@ export async function submitMediaCommentAction(formData: FormData) {
   redirect(`/media#media-${payload.mediaId}`);
 }
 
+export async function deleteMediaCommentAction(formData: FormData) {
+  const currentUser = await getCurrentUser();
+
+  if (!currentUser) {
+    redirect("/login?next=%2Fmedia");
+  }
+
+  const commentId = String(formData.get("commentId") ?? "");
+  if (!commentId) {
+    redirect("/media");
+  }
+
+  const comment = await prisma.mediaComment.findUnique({
+    where: { id: commentId },
+    select: { id: true, authorId: true, mediaId: true },
+  });
+
+  if (!comment) {
+    redirect("/media");
+  }
+
+  const canDelete =
+    comment.authorId === currentUser.id || isMediaAdmin(currentUser) || isVolunteerAdmin(currentUser);
+
+  if (!canDelete) {
+    redirect(`/media#media-${comment.mediaId}`);
+  }
+
+  await prisma.mediaComment.delete({ where: { id: comment.id } });
+
+  revalidatePath("/media");
+  redirect(`/media#media-${comment.mediaId}`);
+}
+
 export async function createEventAction(formData: FormData) {
   await requireVolunteerAdmin();
 
