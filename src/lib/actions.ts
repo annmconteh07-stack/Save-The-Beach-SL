@@ -454,32 +454,85 @@ export async function submitEventRegistration(formData: FormData) {
 }
 
 export async function submitVolunteerForm(formData: FormData) {
-  let payload: z.infer<typeof volunteerSchema>;
-  try {
-    payload = volunteerSchema.parse({
-      name: String(formData.get("name") ?? ""),
-      phone: String(formData.get("phone") ?? ""),
-      email: String(formData.get("email") ?? ""),
-      age: formData.get("age") ?? "",
-    });
-  } catch {
+  const parsed = volunteerSchema.safeParse({
+    name: String(formData.get("name") ?? ""),
+    phone: String(formData.get("phone") ?? ""),
+    email: String(formData.get("email") ?? ""),
+    age: formData.get("age") ?? "",
+  });
+
+  if (!parsed.success) {
     redirect("/volunteer?error=invalid");
   }
 
+  const { name, phone, age } = parsed.data;
+  const email = parsed.data.email.toLowerCase();
+
+  let outcome = "error";
   try {
-    await prisma.volunteer.create({
-      data: {
-        name: payload.name,
-        email: payload.email.toLowerCase(),
-        phone: payload.phone,
-        age: payload.age,
-      },
+    outcome = await prisma.$transaction(async (tx) => {
+      const existing = await tx.volunteer.findFirst({
+        where: { OR: [{ email }, { phone }] },
+        select: { id: true },
+      });
+      if (existing) {
+        return "duplicate";
+      }
+
+      await tx.volunteer.create({
+        data: { name, email, phone, age },
+      });
+
+      return "ok";
     });
   } catch {
+    outcome = "error";
+  }
+
+  if (outcome === "duplicate") {
+    redirect("/volunteer?error=already-registered");
+  }
+  if (outcome !== "ok") {
     redirect("/volunteer?error=save-failed");
   }
 
   redirect("/volunteer?registered=1");
+}
+
+export async function deleteVolunteerAction(formData: FormData) {
+  await requireVolunteerAdmin();
+
+  const id = String(formData.get("id") ?? "");
+  if (formData.get("confirm") !== "1" || !id) {
+    redirect("/volunteer-admin/volunteers?error=confirm");
+  }
+
+  try {
+    await prisma.volunteer.delete({ where: { id } });
+  } catch {
+    redirect("/volunteer-admin/volunteers?error=delete-failed");
+  }
+
+  revalidatePath("/volunteer-admin");
+  redirect("/volunteer-admin/volunteers?deleted=volunteer");
+}
+
+export async function deleteRegistrationAction(formData: FormData) {
+  await requireVolunteerAdmin();
+
+  const id = String(formData.get("id") ?? "");
+  if (formData.get("confirm") !== "1" || !id) {
+    redirect("/volunteer-admin/volunteers?error=confirm");
+  }
+
+  try {
+    await prisma.registration.delete({ where: { id } });
+  } catch {
+    redirect("/volunteer-admin/volunteers?error=delete-failed");
+  }
+
+  revalidatePath("/volunteer-admin");
+  redirect("/volunteer-admin/volunteers?deleted=registration");
 }
 
 export async function submitStoryAction(formData: FormData) {

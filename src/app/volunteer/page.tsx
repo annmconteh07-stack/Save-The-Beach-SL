@@ -87,6 +87,14 @@ export default async function VolunteerPage({
                   you need to know.
                 </p>
               </div>
+            ) : error === "already-registered" ? (
+              <div className="notice notice-danger" role="alert">
+                <h3 style={{ marginTop: 0 }}>You&apos;re already on the list.</h3>
+                <p>
+                  Each person can join the volunteer list once, so we don&apos;t need another
+                  sign-up from you. If your details have changed, please contact the team.
+                </p>
+              </div>
             ) : (
               <>
                 {error ? (

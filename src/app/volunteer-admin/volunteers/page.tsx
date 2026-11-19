@@ -1,9 +1,28 @@
 import VolunteerAdminLayoutShell from "@/components/volunteer-admin-shell";
+import VolunteerDeleteForm from "@/components/volunteer-delete-form";
 import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminVolunteersPage() {
+export default async function AdminVolunteersPage({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const params = (await searchParams) ?? {};
+  const notice =
+    params.deleted === "volunteer"
+      ? "Volunteer signup deleted."
+      : params.deleted === "registration"
+        ? "Event registration deleted."
+        : null;
+  const errorMessage =
+    params.error === "confirm"
+      ? "Please confirm the deletion before continuing."
+      : params.error === "delete-failed"
+        ? "We could not delete that record. Please try again."
+        : null;
+
   const volunteers = await prisma.volunteer.findMany({
     orderBy: { createdAt: "desc" },
   });
@@ -15,6 +34,17 @@ export default async function AdminVolunteersPage() {
 
   return (
     <VolunteerAdminLayoutShell title="Volunteers" description="Everyone who has signed up to help.">
+      {notice ? (
+        <div className="success-panel admin-notice">
+          <p>{notice}</p>
+        </div>
+      ) : null}
+      {errorMessage ? (
+        <div className="notice notice-danger admin-notice" role="alert">
+          <p>{errorMessage}</p>
+        </div>
+      ) : null}
+
       <div className="admin-columns">
         <section className="admin-panel">
           <div className="panel-heading">
@@ -35,6 +65,7 @@ export default async function AdminVolunteersPage() {
                     <th>Phone</th>
                     <th>Email</th>
                     <th>Signed up</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -48,6 +79,9 @@ export default async function AdminVolunteersPage() {
                         {new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric" }).format(
                           volunteer.createdAt,
                         )}
+                      </td>
+                      <td>
+                        <VolunteerDeleteForm id={volunteer.id} name={volunteer.name} kind="volunteer" />
                       </td>
                     </tr>
                   ))}
@@ -76,6 +110,7 @@ export default async function AdminVolunteersPage() {
                     <th>Event</th>
                     <th>Phone</th>
                     <th>Email</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -86,6 +121,9 @@ export default async function AdminVolunteersPage() {
                       <td>{registration.event.title}</td>
                       <td>{registration.phone}</td>
                       <td>{registration.email}</td>
+                      <td>
+                        <VolunteerDeleteForm id={registration.id} name={registration.name} kind="registration" />
+                      </td>
                     </tr>
                   ))}
                 </tbody>
