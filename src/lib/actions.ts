@@ -535,6 +535,42 @@ export async function deleteRegistrationAction(formData: FormData) {
   redirect("/volunteer-admin/volunteers?deleted=registration");
 }
 
+export async function deleteVolunteersAction(formData: FormData) {
+  await requireVolunteerAdmin();
+
+  const ids = formData.getAll("ids").map(String).filter(Boolean);
+  if (formData.get("confirm") !== "1" || ids.length === 0) {
+    redirect("/volunteer-admin/volunteers?error=confirm");
+  }
+
+  try {
+    await prisma.volunteer.deleteMany({ where: { id: { in: ids } } });
+  } catch {
+    redirect("/volunteer-admin/volunteers?error=delete-failed");
+  }
+
+  revalidatePath("/volunteer-admin");
+  redirect(`/volunteer-admin/volunteers?deleted=volunteer&count=${ids.length}`);
+}
+
+export async function deleteRegistrationsAction(formData: FormData) {
+  await requireVolunteerAdmin();
+
+  const ids = formData.getAll("ids").map(String).filter(Boolean);
+  if (formData.get("confirm") !== "1" || ids.length === 0) {
+    redirect("/volunteer-admin/volunteers?error=confirm");
+  }
+
+  try {
+    await prisma.registration.deleteMany({ where: { id: { in: ids } } });
+  } catch {
+    redirect("/volunteer-admin/volunteers?error=delete-failed");
+  }
+
+  revalidatePath("/volunteer-admin");
+  redirect(`/volunteer-admin/volunteers?deleted=registration&count=${ids.length}`);
+}
+
 export async function submitStoryAction(formData: FormData) {
   const currentUser = await getCurrentUser();
 

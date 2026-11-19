@@ -261,6 +261,10 @@ td small, .admin-event-row small, .post-review small, .admin-post-item small, .v
 .member-delete-warning { color: #a83228; font-size: 14px; line-height: 1.7; margin: 0; }
 .member-delete-actions { align-items: center; display: flex; gap: 10px; margin-top: 14px; }
 .member-delete-actions .read-button { cursor: pointer; font-size: 9px; padding: 10px 14px; }
+.bulk-delete-form { align-items: center; display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 4px; }
+.bulk-delete-form .member-delete-warning { flex: 1 1 100%; font-size: 12px; }
+.bulk-delete-form .delete-button:disabled { cursor: not-allowed; opacity: 0.45; }
+.registrations-panel input[type="checkbox"] { accent-color: var(--blue); cursor: pointer; }
 .admin-detail-grid { display: grid; gap: 14px 28px; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 4px 0 0; }
 .admin-detail-grid > div { border-top: 1px solid #e0edf4; padding-top: 13px; }
 .admin-detail-grid dt { color: #6e8799; font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase; }

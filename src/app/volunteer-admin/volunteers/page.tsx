@@ -1,5 +1,6 @@
+import AutoDismissNotice from "@/components/auto-dismiss-notice";
 import VolunteerAdminLayoutShell from "@/components/volunteer-admin-shell";
-import VolunteerDeleteForm from "@/components/volunteer-delete-form";
+import VolunteerRecordsTable from "@/components/volunteer-records-table";
 import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -10,17 +11,17 @@ export default async function AdminVolunteersPage({
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const params = (await searchParams) ?? {};
-  const notice =
-    params.deleted === "volunteer"
-      ? "Volunteer signup deleted."
-      : params.deleted === "registration"
-        ? "Event registration deleted."
-        : null;
+  const deletedKind = params.deleted === "volunteer" || params.deleted === "registration" ? params.deleted : null;
+  const parsedCount = typeof params.count === "string" ? Number.parseInt(params.count, 10) : NaN;
+  const count = Number.isFinite(parsedCount) && parsedCount > 0 ? parsedCount : 1;
+  const notice = deletedKind
+    ? `${count} ${deletedKind === "volunteer" ? "volunteer signup" : "event registration"}${count === 1 ? "" : "s"} deleted.`
+    : null;
   const errorMessage =
     params.error === "confirm"
       ? "Please confirm the deletion before continuing."
       : params.error === "delete-failed"
-        ? "We could not delete that record. Please try again."
+        ? "We could not delete the selected records. Please try again."
         : null;
 
   const volunteers = await prisma.volunteer.findMany({
@@ -34,11 +35,7 @@ export default async function AdminVolunteersPage({
 
   return (
     <VolunteerAdminLayoutShell title="Volunteers" description="Everyone who has signed up to help.">
-      {notice ? (
-        <div className="success-panel admin-notice">
-          <p>{notice}</p>
-        </div>
-      ) : null}
+      {notice ? <AutoDismissNotice message={notice} clearQuery={["deleted", "count"]} /> : null}
       {errorMessage ? (
         <div className="notice notice-danger admin-notice" role="alert">
           <p>{errorMessage}</p>
@@ -53,42 +50,23 @@ export default async function AdminVolunteersPage({
               <h2>General signups</h2>
             </div>
           </div>
-          {volunteers.length === 0 ? (
-            <p className="empty-state">No general volunteer signups yet.</p>
-          ) : (
-            <div className="registrations-panel">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Age</th>
-                    <th>Phone</th>
-                    <th>Email</th>
-                    <th>Signed up</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {volunteers.map((volunteer) => (
-                    <tr key={volunteer.id}>
-                      <td>{volunteer.name}</td>
-                      <td>{volunteer.age}</td>
-                      <td>{volunteer.phone}</td>
-                      <td>{volunteer.email}</td>
-                      <td>
-                        {new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric" }).format(
-                          volunteer.createdAt,
-                        )}
-                      </td>
-                      <td>
-                        <VolunteerDeleteForm id={volunteer.id} name={volunteer.name} kind="volunteer" />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+          <VolunteerRecordsTable
+            kind="volunteer"
+            columns={["Name", "Age", "Phone", "Email", "Signed up", "Actions"]}
+            emptyMessage="No general volunteer signups yet."
+            records={volunteers.map((volunteer) => ({
+              id: volunteer.id,
+              name: volunteer.name,
+              values: [
+                String(volunteer.age),
+                volunteer.phone,
+                volunteer.email,
+                new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric" }).format(
+                  volunteer.createdAt,
+                ),
+              ],
+            }))}
+          />
         </section>
 
         <section className="admin-panel">
@@ -98,38 +76,21 @@ export default async function AdminVolunteersPage({
               <h2>Event registrations</h2>
             </div>
           </div>
-          {registrations.length === 0 ? (
-            <p className="empty-state">No event registrations yet. They will show up once people sign up to clean-ups.</p>
-          ) : (
-            <div className="registrations-panel">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Age</th>
-                    <th>Event</th>
-                    <th>Phone</th>
-                    <th>Email</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {registrations.map((registration) => (
-                    <tr key={registration.id}>
-                      <td>{registration.name}</td>
-                      <td>{registration.age}</td>
-                      <td>{registration.event.title}</td>
-                      <td>{registration.phone}</td>
-                      <td>{registration.email}</td>
-                      <td>
-                        <VolunteerDeleteForm id={registration.id} name={registration.name} kind="registration" />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+          <VolunteerRecordsTable
+            kind="registration"
+            columns={["Name", "Age", "Event", "Phone", "Email", "Actions"]}
+            emptyMessage="No event registrations yet. They will show up once people sign up to clean-ups."
+            records={registrations.map((registration) => ({
+              id: registration.id,
+              name: registration.name,
+              values: [
+                String(registration.age),
+                registration.event.title,
+                registration.phone,
+                registration.email,
+              ],
+            }))}
+          />
         </section>
       </div>
     </VolunteerAdminLayoutShell>
